@@ -66,11 +66,20 @@ class Up(nn.Module):
         x1 = self.up(x1)
         
         # Input Cropp (if necessary)
-        diff_w = x2.size()[2] - x1.size()[2]
-        diff_h = x2.size()[3] - x1.size()[3]
+        diff_w = x2.size()[3] - x1.size()[3]
+        diff_h = x2.size()[2] - x1.size()[2]
         diff_d = x2.size()[4] - x1.size()[4]
 
-        x1 = x1[:, :, diff_w//2 : diff_w//2+x2.size()[2], diff_h//2 : diff_w//2+x2.size()[3], diff_d//2 : diff_d//2+x2.size()[4]]
+        pad_left = diff_w // 2
+        pad_right = diff_w - pad_left
+
+        pad_top = diff_h // 2
+        pad_bottom = diff_h - pad_top
+
+        pad_front = diff_d // 2
+        pad_back = diff_d - pad_front
+
+        x1 = nn.functional.pad(x1, pad=(pad_left, pad_right, pad_top, pad_bottom, pad_front, pad_back))
 
         print(f'Debug: X1{x1.size()} X2:{x2.size()}')
 
