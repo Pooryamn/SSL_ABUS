@@ -67,7 +67,7 @@ class Up(nn.Module):
         
         # Input Cropp (if necessary)
         # to be complited if there is any errors
-        
+        print(f'Debug: X1{x1.size()} X2:{x2.size()}')
         # Concatenate feature maps
         x = torch.cat([x2, x1], dim=1)
         
