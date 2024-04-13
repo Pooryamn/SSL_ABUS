@@ -65,6 +65,8 @@ class Up(nn.Module):
     def forward(self, x1, x2):
         x1 = self.up(x1)
         
+        print(f'Before: X1: {x1.size()}, X2: {x2.size()}')
+
         # Input Cropp (if necessary)
         diff_w = x2.size()[2] - x1.size()[2]
         diff_h = x2.size()[3] - x1.size()[3]
@@ -81,7 +83,7 @@ class Up(nn.Module):
 
         x1 = nn.functional.pad(x1, pad=(pad_left, pad_right, pad_top, pad_bottom, pad_front, pad_back))
 
-        print(f'Debug: X1{x1.size()} X2:{x2.size()}')
+        print(f'After: X1: {x1.size()}, X2: {x2.size()}')
 
         # Concatenate feature maps
         x = torch.cat([x2, x1], dim=1)
