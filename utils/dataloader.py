@@ -29,8 +29,8 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         
         
         # Convert to Tensor
-        volume = torch.from_numpy(volume)
-        mask   = torch.from_numpy(mask)
+        volume = torch.from_numpy(volume).float().unsqueeze(0)
+        mask   = torch.from_numpy(mask).float().unsqueeze(0)
         
         return volume, mask
 
