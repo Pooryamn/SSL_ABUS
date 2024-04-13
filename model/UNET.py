@@ -81,7 +81,7 @@ class Up(nn.Module):
         pad_front = diff_d // 2
         pad_back = diff_d - pad_front
 
-        x1 = nn.functional.pad(x1, pad=(pad_left, pad_right, pad_top, pad_bottom, pad_front, pad_back))
+        x1 = nn.functional.pad(x1, pad=(pad_front, pad_back, pad_top, pad_bottom, pad_left, pad_right))
 
         print(f'After: X1: {x1.size()}, X2: {x2.size()}')
 
