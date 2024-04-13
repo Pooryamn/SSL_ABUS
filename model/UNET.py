@@ -66,8 +66,14 @@ class Up(nn.Module):
         x1 = self.up(x1)
         
         # Input Cropp (if necessary)
-        # to be complited if there is any errors
+        diff_w = x2.size()[2] - x1.size()[2]
+        diff_h = x2.size()[3] - x1.size()[3]
+        diff_d = x2.size()[4] - x1.size()[4]
+
+        x1 = x1[:, :, diff_w//2 : diff_w//2+x2.size()[2], diff_h//2 : diff_w//2+x2.size()[3], diff_d//2 : diff_d//2+x2.size()[4]]
+
         print(f'Debug: X1{x1.size()} X2:{x2.size()}')
+
         # Concatenate feature maps
         x = torch.cat([x2, x1], dim=1)
         
