@@ -66,8 +66,8 @@ class Up(nn.Module):
         x1 = self.up(x1)
         
         # Input Cropp (if necessary)
-        diff_w = x2.size()[3] - x1.size()[3]
-        diff_h = x2.size()[2] - x1.size()[2]
+        diff_w = x2.size()[2] - x1.size()[2]
+        diff_h = x2.size()[3] - x1.size()[3]
         diff_d = x2.size()[4] - x1.size()[4]
 
         pad_left = diff_w // 2
