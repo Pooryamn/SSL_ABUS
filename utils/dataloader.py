@@ -27,6 +27,8 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         volume = np.load(volume_path)
         mask   = np.load(mask_path)
         
+        # normalize data
+        volume = (volume - volume.min()) / (volume.max() - volume.min())
         
         # Convert to Tensor
         volume = torch.from_numpy(volume).float().unsqueeze(0)
