@@ -42,9 +42,6 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
     
         for i, (volumes, masks) in enumerate(train_dataloader):
         
-            # cast masks
-            masks = masks.type(torch.int8)
-        
             volumes = volumes.to(device)
             masks = masks.to(device)
         
@@ -60,6 +57,10 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
 
             # Log
             if i%100 == 0:
+                
+                # cast masks
+                masks = masks.type(torch.int8)
+                
                 dice_score = dice_metric(outputs, masks)
                 print(f"Epoch: {epoch+1}/{epochs}, batch: {i+1}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice_score.item():.4f}")
         
@@ -88,9 +89,6 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
         
             for j, (volumes, masks) in enumerate(test_dataloader):
             
-                # cast masks
-                masks = masks.type(torch.int8)
-            
                 volumes = volumes.to(device)
                 masks   = masks.to(device)
             
@@ -103,6 +101,9 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
                 # Calculate Loss
                 loss = criterion(outputs, masks)
                 val_loss += loss.item()
+            
+                # cast masks
+                masks = masks.type(torch.int8)
             
                 # Calculate Dice
                 dice_score = dice_metric(outputs, masks)
