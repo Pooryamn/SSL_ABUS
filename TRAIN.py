@@ -30,7 +30,7 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
     criterion = nn.BCEWithLogitsLoss() # Binary Segmentation
 
     # dice metric
-    dice_metric = Dice()
+    dice_metric = Dice().to(device)
 
     # Trainin Loop
     for epoch in range(epochs):
