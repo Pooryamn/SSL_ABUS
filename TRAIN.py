@@ -1,11 +1,12 @@
 import torch
 import torch.nn as nn
+from torchmetrics import Dice
 # Memory management
 import gc
 
 from utils.dataloader import DataLoaderCreator
 from model.UNET import UNet
-from utils.metrics import dice_score
+
 
 def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps):
     
@@ -28,6 +29,9 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
     # Loss Funcrion
     criterion = nn.BCEWithLogitsLoss() # Binary Segmentation
 
+    # dice metric
+    dice_metric = Dice(reduction="mean")
+
     # Trainin Loop
     for epoch in range(epochs):
     
@@ -35,7 +39,6 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
         model.train()
     
         train_loss = 0
-        train_dice = 0
     
         for i, (volumes, masks) in enumerate(train_dataloader):
         
@@ -51,30 +54,26 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
             # Calculate Loss
             loss = criterion(outputs, masks)
             train_loss += loss.item()
+
+            # Log
+            if i%100 == 0:
+                dice_score = dice_metric(outputs, masks)
+                print(f"Epoch: {epoch+1}/{epochs}, batch: {i+1}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice_score.item():.4f}")
         
-            # Calculate Dice
-            batch_dice_score = dice_score(outputs, masks)
-            train_dice += batch_dice_score
-        
-            # Memory related function
-            del masks
-        
+
             # Backward Pass
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
         
             # Memory related function
+            del masks
             gc.collect()
             torch.cuda.empty_cache()
         
-            # Log
-            if i%100 == 0:
-                print(f"Epoch: {epoch+1}/{epochs}, batch: {i+1}/{len(train_dataloader)}, Loss: {loss.item():.4f}")
-        
-        # calculate average loss and dice
+            
+        # calculate average loss
         avg_train_loss = train_loss / len(train_dataloader)
-        avg_train_dice = train_dice / len(train_dataloader)
     
         # Evaluation 
         model.eval()
@@ -99,8 +98,8 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
                 val_loss += loss.item()
             
                 # Calculate Dice
-                batch_dice_score = dice_score(outputs, masks)
-                val_dice += batch_dice_score
+                dice_score = dice_metric(outputs, masks)
+                val_dice += dice_score
             
                 # Memory related function
                 del masks
@@ -112,6 +111,6 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
             avg_val_dice = val_dice / len(test_dataloader)
         
         # EPOCH LOG
-        print(f"********** Epoch: {epoch+1}/{epochs},Train Loss: {avg_train_loss:.4f}, Validation Loss:{avg_val_loss:.4f}, Train Dice: {avg_train_dice:.4f}, Validation Dice: {avg_val_dice:.4f}")
+        print(f"********** Epoch: {epoch+1}/{epochs},Train Loss: {avg_train_loss:.4f}, Validation Loss:{avg_val_loss:.4f}, Validation Dice: {avg_val_dice:.4f}")
 
     torch.save(model.state_dict(), 'model.pth')
