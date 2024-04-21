@@ -104,7 +104,7 @@ class UNet(nn.Module):
         
         self.outc = nn.Conv3d(features[0], out_ch, kernel_size=1)
 
-        self.activation = nn.sigmoid()
+        self.activation = nn.Sigmoid()
         
     
     def forward(self, x):
