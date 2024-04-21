@@ -17,16 +17,15 @@ def dice_score(predictions, targets):
     # flatten predictions and targets
     predictions = predictions.flatten()
     targets = targets.flatten()
-
+    
+    # Thresholding
+    predictions = np.array([1 if x > 0.5 else 0.0 for x in predictions])
+    
     # Calculate Intersection and Union
-    # intersection = (predictions * targets).sum()
-    # union = predictions.sum() + targets.sum()
+    intersection = (predictions * targets).sum()
+    union = predictions.sum() + targets.sum()
 
     # # Dice score formula
-    # dice = (2 * intersection + smooth) / (union + smooth)
+    dice = (2 * intersection + smooth) / (union + smooth)
 
-    predictions = np.array([1 if x > 0.5 else 0.0 for x in predictions])
-
-    dice = np.sum(predictions[targets == 1.0]) * 2.0 / (np.sum(predictions) + np.sum(targets))
-    
     return dice
