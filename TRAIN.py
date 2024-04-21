@@ -39,6 +39,9 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
         train_loss = 0
     
         for i, (volumes, masks) in enumerate(train_dataloader):
+
+            if masks.max() < 1:
+                continue
         
             volumes = volumes.to(device)
             masks = masks.to(device)
@@ -54,9 +57,9 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
             train_loss += loss.item()
 
             # Log
-            if masks.max() > 0:     
-                dice = dice_score(outputs, masks)
-                print(f"Epoch: {epoch}/{epochs}, batch: {i}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.5f}")
+                
+            dice = dice_score(outputs, masks)
+            print(f"Epoch: {epoch}/{epochs}, batch: {i}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.5f}")
         
 
             # Backward Pass
@@ -82,6 +85,9 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
             val_dice = 0
         
             for j, (volumes, masks) in enumerate(test_dataloader):
+
+                if masks.max() < 1:
+                    continue
             
                 volumes = volumes.to(device)
                 masks   = masks.to(device)
