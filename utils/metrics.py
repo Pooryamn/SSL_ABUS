@@ -26,7 +26,6 @@ def dice_score(predictions, targets):
     # dice = (2 * intersection + smooth) / (union + smooth)
 
     predictions = np.array([1 if x > 0.5 else 0.0 for x in predictions])
-    targets     = np.array([1 if x > 0.5 else 0.0 for x in targets])
 
     dice = np.sum(predictions[targets == 1.0]) * 2.0 / (np.sum(predictions) + np.sum(targets))
     
