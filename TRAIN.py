@@ -2,13 +2,12 @@ import sys
 
 import torch
 import torch.nn as nn
-from torchmetrics import Dice
 # Memory management
 import gc
 
 from utils.dataloader import DataLoaderCreator
 from model.UNET import UNet
-
+from utils.metric import dice_score
 
 def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps):
     
@@ -30,9 +29,6 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
 
     # Loss Funcrion
     criterion = nn.BCELoss() # Binary Segmentation
-
-    # dice metric
-    dice_metric = Dice().to(device)
 
     # Trainin Loop
     for epoch in range(epochs):
@@ -58,13 +54,9 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
             train_loss += loss.item()
 
             # Log
-            if i%100 == 0:
-                
-                # cast masks
-                masks = masks.type(torch.int8)
-                
-                dice_score = dice_metric(outputs, masks)
-                print(f"Epoch: {epoch+1}/{epochs}, batch: {i+1}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice_score.item():.4f}")
+            if i%100 == 0:     
+                dice = dice_score(outputs, masks)
+                print(f"Epoch: {epoch+1}/{epochs}, batch: {i+1}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.4f}")
         
 
             # Backward Pass
@@ -108,8 +100,8 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
                 masks = masks.type(torch.int8)
             
                 # Calculate Dice
-                dice_score = dice_metric(outputs, masks)
-                val_dice += dice_score
+                dice = dice_score(outputs, masks)
+                val_dice += dice
             
                 # Memory related function
                 del masks
