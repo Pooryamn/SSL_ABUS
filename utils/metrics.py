@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 
 def dice_score(predictions, targets):
     """
@@ -19,7 +18,7 @@ def dice_score(predictions, targets):
     targets = targets.flatten()
     
     # Thresholding
-    predictions = np.array([1 if x > 0.5 else 0.0 for x in predictions])
+    predictions = (predictions > 0.5).float()
     
     # Calculate Intersection and Union
     intersection = (predictions * targets).sum()
