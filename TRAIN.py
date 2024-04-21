@@ -27,7 +27,7 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
-    criterion = nn.BCEWithLogitsLoss() # Binary Segmentation
+    criterion = nn.BCELoss() # Binary Segmentation
 
     # dice metric
     dice_metric = Dice().to(device)
