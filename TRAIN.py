@@ -54,9 +54,9 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
             train_loss += loss.item()
 
             # Log
-            if i%100 == 0:     
+            if i%50 == 0:     
                 dice = dice_score(outputs, masks)
-                print(f"Epoch: {epoch+1}/{epochs}, batch: {i+1}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.4f}")
+                print(f"Epoch: {epoch}/{epochs}, batch: {i+1}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.4f}")
         
 
             # Backward Pass
@@ -96,8 +96,6 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
                 loss = criterion(outputs, masks)
                 val_loss += loss.item()
             
-                # cast masks
-                masks = masks.type(torch.int8)
             
                 # Calculate Dice
                 dice = dice_score(outputs, masks)
