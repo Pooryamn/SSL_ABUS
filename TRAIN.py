@@ -7,7 +7,7 @@ import gc
 
 from utils.dataloader import DataLoaderCreator
 from model.UNET import UNet
-from utils.metric import dice_score
+from utils.metrics import dice_score
 
 def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps):
     
