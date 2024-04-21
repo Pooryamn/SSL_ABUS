@@ -103,6 +103,8 @@ class UNet(nn.Module):
         self.up3 = Up(features[1], features[0], bilinear=bilinear)
         
         self.outc = nn.Conv3d(features[0], out_ch, kernel_size=1)
+
+        self.activation = nn.sigmoid()
         
     
     def forward(self, x):
@@ -115,6 +117,8 @@ class UNet(nn.Module):
         x = self.up2(x, x2)
         x = self.up3(x, x1)
         
-        logits = self.outc(x)
+        #logits = self.outc(x)
+        x = self.outc(x)
+        logits = self.activation(x)
         
         return logits
