@@ -1,3 +1,5 @@
+import sys
+
 import torch
 import torch.nn as nn
 from torchmetrics import Dice
@@ -122,3 +124,15 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
         print(f"********** Epoch: {epoch+1}/{epochs},Train Loss: {avg_train_loss:.4f}, Validation Loss:{avg_val_loss:.4f}, Validation Dice: {avg_val_dice:.4f}")
 
     torch.save(model.state_dict(), 'model.pth')
+
+
+if __name__ == 'main':
+
+    TRAIN_Func(
+        epochs = sys.argv[1],
+        batch_size = sys.argv[2],
+        train_volume_dir = sys.argv[3],
+        train_mask_dir = sys.argv[4],
+        test_volume_dir = sys.argv[5],
+        test_mask_dir = sys.argv[6],
+        feature_maps = [16,32,64,128])
