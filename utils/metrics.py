@@ -18,10 +18,15 @@ def dice_score(predictions, targets):
     targets = targets.flatten()
 
     # Calculate Intersection and Union
-    intersection = (predictions * targets).sum()
-    union = predictions.sum() + targets.sum()
+    # intersection = (predictions * targets).sum()
+    # union = predictions.sum() + targets.sum()
 
-    # Dice score formula
-    dice = (2 * intersection + smooth) / (union + smooth)
+    # # Dice score formula
+    # dice = (2 * intersection + smooth) / (union + smooth)
+
+    predictions = np.array([1 if x > 0.5 else 0.0 for x in predictions])
+    targets     = np.array([1 if x > 0.5 else 0.0 for x in targets])
+
+    dice = np.sum(predictions[targets == 1.0]) * 2.0 / (np.sum(predictions) + np.sum(targets))
     
     return dice
