@@ -7,9 +7,10 @@ import gc
 
 from utils.dataloader import DataLoaderCreator
 from model.UNET import UNet
+from model.ATT_UNET import Attention_Unet
 from utils.metrics import dice_score
 
-def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps):
+def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -21,8 +22,15 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
     train_dataloader = DataLoaderCreator(train_volume_dir, train_mask_dir, batch_size)
     test_dataloader  = DataLoaderCreator(test_volume_dir, test_mask_dir, batch_size)
 
-    # Create Model
-    model = UNet(in_ch=1, out_ch=1,features=feature_maps).to(device)
+    if model == "Unet":
+        # Create Model 
+        model = UNet(in_ch=1, out_ch=1, features=feature_maps).to(device)
+
+    elif model == "Attention_Unet":
+        model  = Attention_Unet(in_ch=1, out_ch=1, features=feature_maps).to(device)
+
+    else:
+        raise('Error in selecing the model')
 
     # Optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -126,9 +134,10 @@ def TRAIN_Func(epochs, batch_size, train_volume_dir, train_mask_dir, test_volume
 TRAIN_Func(
     epochs = int(sys.argv[1]),
     batch_size = int(sys.argv[2]),
-    train_volume_dir = sys.argv[3],
-    train_mask_dir = sys.argv[4],
-    test_volume_dir = sys.argv[5],
-    test_mask_dir = sys.argv[6],
-    feature_maps = [16,32,64,128]
+    model = sys.argv[3],
+    train_volume_dir = sys.argv[4],
+    train_mask_dir = sys.argv[5],
+    test_volume_dir = sys.argv[6],
+    test_mask_dir = sys.argv[7],
+    feature_maps = [16,32,64,128,256]
     )
