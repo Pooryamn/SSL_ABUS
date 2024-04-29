@@ -47,9 +47,6 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
         train_loss = 0
     
         for i, (volumes, masks) in enumerate(train_dataloader):
-
-            if masks.max() < 1:
-                continue
         
             volumes = volumes.to(device)
             masks = masks.to(device)
@@ -65,9 +62,9 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
             train_loss += loss.item()
 
             # Log
-                
-            dice = dice_score(outputs, masks)
-            print(f"Epoch: {epoch}/{epochs}, batch: {i}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.5f}")
+            if (i % 50 == 0) :
+                dice = dice_score(outputs, masks)
+                print(f"Epoch: {epoch}/{epochs}, batch: {i}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.5f}")
         
 
             # Backward Pass
@@ -93,9 +90,6 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
             val_dice = 0
         
             for j, (volumes, masks) in enumerate(test_dataloader):
-
-                if masks.max() < 1:
-                    continue
             
                 volumes = volumes.to(device)
                 masks   = masks.to(device)
@@ -132,12 +126,12 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
 
 
 TRAIN_Func(
-    epochs = int(sys.argv[1]),
-    batch_size = int(sys.argv[2]),
-    model = sys.argv[3],
-    train_volume_dir = sys.argv[4],
-    train_mask_dir = sys.argv[5],
-    test_volume_dir = sys.argv[6],
-    test_mask_dir = sys.argv[7],
+    epochs = 1,
+    batch_size = 1,
+    model = 'Attention_Unet',
+    train_volume_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Volumes',
+    train_mask_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Mask',
+    test_volume_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Volumes',
+    test_mask_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Mask',
     feature_maps = [16,32,64,128,256]
     )
