@@ -69,6 +69,16 @@ class Attention_block(nn.Module):
 
 
     def forward(self, g, x):
+        
+        # if needed:
+        if (g.shape[2] != x.shape[2]):
+            g_slice = g[:,:,-1,:,:]
+            g = torch.cat((g, g_slice[:,:,None,:,:]), 2)
+        
+        if (g.shape[3] != x.shape[3]):
+            g_slice = g[:,:,:,-1,:]
+            g = torch.cat((g, g_slice[:,:,:,None,:]), 3)
+
         g1 = self.W_g(g)
         x1 = self.W_x(x)
 
@@ -119,37 +129,42 @@ class Attention_Unet(nn.Module):
         self.activation = nn.Sigmoid()
 
     def forward(self, x):
+        
         e1 = self.Conv1(x)
-
+    
         e2 = self.Maxpool1(e1)
         e2 = self.Conv2(e2)
-
+     
         e3 = self.Maxpool2(e2)
         e3 = self.Conv3(e3)
-
+      
         e4 = self.Maxpool3(e3)
         e4 = self.Conv4(e4)
 
         e5 = self.Maxpool4(e4)
         e5 = self.Conv5(e5)
-
-        d5 = self.Up5(e5)
+        
+        d5 = self.Up5(e5) 
         x4 = self.Att5(g=d5, x=e4)
+        d5 = self.padding_func(x4, d5)
         d5 = torch.cat((x4, d5), dim=1)
         d5 = self.Up_conv5(d5)
 
         d4 = self.Up4(d5)
         x3 = self.Att4(g=d4, x=e3)
+        d4 = self.padding_func(x3, d4)
         d4 = torch.cat((x3, d4), dim=1)
         d4 = self.Up_conv4(d4)
 
         d3 = self.Up3(d4)
         x2 = self.Att3(g=d3, x=e2)
+        d3 = self.padding_func(x2, d3)
         d3 = torch.cat((x2, d3), dim=1)
         d3 = self.Up_conv3(d3)
 
         d2 = self.Up2(d3)
         x1 = self.Att2(g=d2, x=e1)
+        d2 = self.padding_func(x1, d2)
         d2 = torch.cat((x1, d2), dim=1)
         d2 = self.Up_conv2(d2)
 
@@ -157,3 +172,16 @@ class Attention_Unet(nn.Module):
         out = self.activation(out)
 
         return out
+    
+    def padding_func(self, x, d):
+        if (x.shape != d.shape):
+            # if needed:
+            if (x.shape[2] != d.shape[2]):
+                d_slice = d[:,:,-1,:,:]
+                d = torch.cat((d, d_slice[:,:,None,:,:]), 2)
+        
+            if (x.shape[3] != d.shape[3]):
+                d_slice = d[:,:,:,-1,:]
+                d = torch.cat((d, d_slice[:,:,:,None,:]), 3)
+
+        return d
