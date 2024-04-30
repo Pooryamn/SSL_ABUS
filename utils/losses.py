@@ -54,3 +54,23 @@ class IoULoss(nn.Module):
         IoU = (intersection + smooth)/(union + smooth)
                 
         return 1 - IoU
+    
+
+class FocalLoss(nn.Module):
+    def __init__(self, ALPHA = 0.8, GAMMA = 2, weight=None, size_average=True):
+        super(FocalLoss, self).__init__()
+        self.alpha = ALPHA
+        self.gamma = GAMMA
+
+    def forward(self, inputs, targets, smooth=1):    
+        
+        #flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+        
+        #first compute binary cross-entropy 
+        BCE = F.binary_cross_entropy(inputs, targets, reduction='mean')
+        BCE_EXP = torch.exp(-BCE)
+        focal_loss = self.alpha * (1-BCE_EXP)**self.gamma * BCE
+                       
+        return focal_loss
