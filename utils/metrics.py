@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 def dice_score(predictions, targets):
     """
@@ -28,3 +29,17 @@ def dice_score(predictions, targets):
     dice = (2 * intersection + smooth) / (union + smooth)
 
     return dice
+
+def PSNR(data, noisy_data):
+
+    MSE = np.mean((data - noisy_data) ** 2)
+
+    if (MSE == 0):
+        # no noise is present in the signal
+        return 100
+
+    max_pixel = 1.0
+
+    psnr = 20 * np.log10(max_pixel / (np.sqrt(MSE)))
+
+    return psnr 
