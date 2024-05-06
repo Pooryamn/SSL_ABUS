@@ -1,4 +1,5 @@
 import sys
+import gc
 
 import torch
 import torch.nn as nn
@@ -66,15 +67,17 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
         loss.backward()
         optimizer.step()
         
-        # metrics
+        masks = masks.squeeze(0).squeeze(0)
+        outputs = outputs.squeeze(0).squeeze(0)
 
-        Train_ssim_score = ssim(masks.cpu().detach().numpy(), outputs.cpu().detach().numpy(), full=True, data_range=1.0)
+        masks = masks.cpu().detach().numpy()
+        outputs = outputs.cpu().detach().numpy()
+
+        # metrics
+        Train_ssim_score = ssim(masks, outputs, full=True, data_range=1.0)
         Train_ssim_score = Train_ssim_score[0]
 
-        Train_PSNR = PSNR(masks.cpu().detach().numpy(), outputs.cpu().detach().numpy())
-
-
-        print(f"Epoch: {epoch}/{epochs}, batch: {i}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.5f}")  
+        Train_PSNR = PSNR(masks, outputs)
         
         # Memory related function
         del masks
@@ -105,11 +108,16 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
             val_loss += loss.item()
             
             # metrics
+            masks = masks.squeeze(0).squeeze(0)
+            outputs = outputs.squeeze(0).squeeze(0)
 
-            Valid_ssim_score = ssim(masks.cpu().detach().numpy(), outputs.cpu().detach().numpy(), full=True, data_range=1.0)
+            masks = masks.cpu().detach().numpy()
+            outputs = outputs.cpu().detach().numpy()
+
+            Valid_ssim_score = ssim(masks, outputs, full=True, data_range=1.0)
             Valid_ssim_score = Valid_ssim_score[0]
 
-            Valid_PSNR = PSNR(masks.cpu().detach().numpy(), outputs.cpu().detach().numpy())
+            Valid_PSNR = PSNR(masks, outputs)
             
             # Memory related function
             del masks
@@ -119,4 +127,6 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
         # EPOCH LOG
         print(f"********** Epoch: {epoch+1}/{epochs},Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}, Train PSNR: {Train_PSNR:.4f}, Validation PSNR: {Valid_PSNR:.4f}, Train SSIM: {Train_ssim_score:.4f}, Validation SSIM: {Valid_ssim_score:.4f}")
 
+        
     torch.save(model.state_dict(), 'model.pth')
+    exit()
