@@ -126,16 +126,3 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
         print(f"********** Epoch: {epoch+1}/{epochs},Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}, Train PSNR: {Train_PSNR:.4f}, Validation PSNR: {Valid_PSNR:.4f}, Train SSIM: {Train_ssim_score:.4f}, Validation SSIM: {Valid_ssim_score:.4f}")
 
     torch.save(model.state_dict(), 'model.pth')
-
-
-
-TRAIN_Func(
-    epochs = 1,
-    batch_size = 1,
-    model = 'Attention_Unet',
-    train_volume_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Volumes',
-    train_mask_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Mask',
-    test_volume_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Volumes',
-    test_mask_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Mask',
-    feature_maps = [16,32,64,128,256]
-    )
