@@ -1,7 +1,5 @@
 import torch
-from torch.utils.data import DataLoader
 import numpy as np
-import os
 
 # Function to generate noisy data
 def generate_noisy_data(data, noise_prop):
