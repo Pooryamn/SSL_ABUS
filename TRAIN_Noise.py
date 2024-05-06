@@ -106,10 +106,10 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
             
             # metrics
 
-            Valid_ssim_score = ssim(masks.detach().numpy(), outputs.detach().numpy(), full=True, data_range=1.0)
+            Valid_ssim_score = ssim(masks.cpu().detach().numpy(), outputs.cpu().detach().numpy(), full=True, data_range=1.0)
             Valid_ssim_score = Valid_ssim_score[0]
 
-            Valid_PSNR = PSNR(masks.detach().numpy(), outputs.detach().numpy())
+            Valid_PSNR = PSNR(masks.cpu().detach().numpy(), outputs.cpu().detach().numpy())
             
             # Memory related function
             del masks
