@@ -67,14 +67,11 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
         optimizer.step()
         
         # metrics
-        # convert to numpy first
-        masks   = np.array(masks.squeeze(0).squeeze(0))
-        outputs = np.array(outputs.squeeze(0).squeeze(0))
 
-        Train_ssim_score = ssim(masks, outputs, full=True, data_range=1.0)
+        Train_ssim_score = ssim(masks.detach().numpy(), outputs.detach().numpy(), full=True, data_range=1.0)
         Train_ssim_score = Train_ssim_score[0]
 
-        Train_PSNR = PSNR(masks, outputs)
+        Train_PSNR = PSNR(masks.detach().numpy(), outputs.detach().numpy())
 
 
         print(f"Epoch: {epoch}/{epochs}, batch: {i}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.5f}")  
@@ -108,14 +105,11 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
             val_loss += loss.item()
             
             # metrics
-            # convert to numpy first
-            masks   = np.array(masks.squeeze(0).squeeze(0))
-            outputs = np.array(outputs.squeeze(0).squeeze(0))
 
-            Valid_ssim_score = ssim(masks, outputs, full=True, data_range=1.0)
+            Valid_ssim_score = ssim(masks.detach().numpy(), outputs.detach().numpy(), full=True, data_range=1.0)
             Valid_ssim_score = Valid_ssim_score[0]
 
-            Valid_PSNR = PSNR(masks, outputs)
+            Valid_PSNR = PSNR(masks.detach().numpy(), outputs.detach().numpy())
             
             # Memory related function
             del masks
