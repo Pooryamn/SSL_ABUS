@@ -169,7 +169,7 @@ class Attention_Unet(nn.Module):
         d2 = self.Up_conv2(d2)
 
         out = self.Conv(d2)
-        out = self.activation(out)
+        #out = self.activation(out)
 
         return out
     

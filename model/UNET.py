@@ -118,7 +118,7 @@ class UNet(nn.Module):
         x = self.up3(x, x1)
         
         #logits = self.outc(x)
-        x = self.outc(x)
-        logits = self.activation(x)
+        logits = self.outc(x)
+        #logits = self.activation(x)
         
         return logits
