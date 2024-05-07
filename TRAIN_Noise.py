@@ -129,4 +129,3 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
 
         
     torch.save(model.state_dict(), 'model.pth')
-    exit()
