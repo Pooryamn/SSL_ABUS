@@ -91,3 +91,16 @@ class R2U_Net(nn.Module):
         self.RRCNN4 = RRCNN_Block(features[2], features[3], t=t)
         self.RRCNN5 = RRCNN_Block(features[3], features[4], t=t)
 
+        self.Up5 = Up(features[4], features[3])
+        self.Up_RRCNN5 = RRCNN_Block(features[4], features[3], t=t)
+
+        self.Up4 = Up(features[3], features[2])
+        self.Up_RRCNN4 = RRCNN_Block(features[3], features[2], t=t)
+
+        self.Up3 = Up(features[2], features[1])
+        self.Up_RRCNN3 = RRCNN_Block(features[2], features[1], t=t)
+
+        self.Up2 = Up(features[1], features[0])
+        self.Up_RRCNN2 = RRCNN_Block(features[1], features[0], t=t)
+
+        self.Conv = nn.Conv3d(features[0], out_ch, kernel_size=1, stride=1, padding=0)
