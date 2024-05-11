@@ -27,6 +27,28 @@ class Recurrent_block(nn.Module):
         
         return x1
 
+class RRCNN_Block(nn.Module):
+    """
+    Recurrent Residual Convolutional Neural Network Block
+    """
+
+    def __init__(self, in_ch, out_ch, t=2):
+        super(RRCNN_Block, self).__init__()
+
+        self.RCNN = nn.Sequential(
+            Recurrent_block(out_ch, t=t),
+            Recurrent_block(out_ch, t=t)
+        )
+
+        self.Conv = nn.Conv3d(in_ch, out_ch, kernel_size=1, stride=1, padding=0)
+
+    def forward(self, x):
+        x1 = self.Conv(x)
+        x2 = self.RCNN(x1)
+
+        out = x1 + x2
+        return out
+
 class R2U_Net(nn.Module):
     """
     R2U-Net model
