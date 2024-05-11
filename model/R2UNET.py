@@ -1,6 +1,26 @@
 import torch
 import torch.nn as nn
 
+class Up(nn.Module):
+    """
+    Upsample -> Conv -> Batch norm -> ReLU
+    """
+    
+    def __init__(self, in_ch, out_ch):
+        super(Up, self).__init__()
+
+        self.up = nn.Sequential(
+            nn.Upsample(scale_factor=2),
+            nn.Conv3d(in_ch, out_ch, kernel_size=3, stride=1, padding=1, bias=True),
+            nn.BatchNorm3d(out_ch),
+            nn.ReLU(inplace=True)
+        )
+
+    def forward(self,x):
+        x = self.up(x)
+
+        return x
+
 class Recurrent_block(nn.Module):
     """
     Recurrent block for R2U_Net
@@ -71,4 +91,3 @@ class R2U_Net(nn.Module):
         self.RRCNN4 = RRCNN_Block(features[2], features[3], t=t)
         self.RRCNN5 = RRCNN_Block(features[3], features[4], t=t)
 
-        
