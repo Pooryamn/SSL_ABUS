@@ -64,3 +64,11 @@ class R2U_Net(nn.Module):
         self.Maxpool4 = nn.MaxPool3d(2, stride=2)
 
         self.Upsample = nn.Upsample(scale_factor=2)
+
+        self.RRCNN1 = RRCNN_Block(in_ch, features[0], t=t)
+        self.RRCNN2 = RRCNN_Block(features[0], features[1], t=t)
+        self.RRCNN3 = RRCNN_Block(features[1], features[2], t=t)
+        self.RRCNN4 = RRCNN_Block(features[2], features[3], t=t)
+        self.RRCNN5 = RRCNN_Block(features[3], features[4], t=t)
+
+        
