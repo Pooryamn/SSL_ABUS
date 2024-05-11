@@ -7,7 +7,7 @@ import numpy as np
 
 from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
-
+from model.R2UNET import R2U_Net
 from utils.dataloader_noise import Data_generator
 from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
@@ -30,6 +30,9 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
 
     elif model == "Attention_Unet":
         model  = Attention_Unet(in_ch=1, out_ch=1, features=feature_maps).to(device)
+
+    elif model == "R2Unet":
+        model = R2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
 
     else:
         raise('Error in selecting the model')
