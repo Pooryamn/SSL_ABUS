@@ -104,3 +104,35 @@ class R2U_Net(nn.Module):
         self.Up_RRCNN2 = RRCNN_Block(features[1], features[0], t=t)
 
         self.Conv = nn.Conv3d(features[0], out_ch, kernel_size=1, stride=1, padding=0)
+
+    def forward(self, x):
+        
+        e1 = self.RRCNN1(x)
+
+        e2 = self.Maxpool1(e1)
+        e2 = self.RRCNN2(e2)
+
+        e3 = self.Maxpool2(e2)
+        e3 = self.RRCNN3(e3)
+
+        e4 = self.Maxpool3(e3)
+        e4 = self.RRCNN4(e4)
+
+        e5 = self.Maxpool4(e4)
+        e5 = self.RRCNN5(e5)
+
+        d5 = self.Up5(e5)
+        d5 = torch.cat((e4, d5), dim=1)
+
+    def padding_func(self, x, d):
+        if (x.shape != d.shape):
+            # if needed:
+            if (x.shape[2] != d.shape[2]):
+                d_slice = d[:,:,-1,:,:]
+                d = torch.cat((d, d_slice[:,:,None,:,:]), 2)
+        
+            if (x.shape[3] != d.shape[3]):
+                d_slice = d[:,:,:,-1,:]
+                d = torch.cat((d, d_slice[:,:,:,None,:]), 3)
+
+        return d
