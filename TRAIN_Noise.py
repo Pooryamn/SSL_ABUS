@@ -17,7 +17,7 @@ from skimage.metrics import structural_similarity as ssim
 from utils.early_stop import EarlyStopper
 
 
-def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
+def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, weight_path = None, log_path = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -42,6 +42,9 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
     else:
         raise('Error in selecing the model')
 
+    if (weight_path != None):
+        model.load_state_dict(torch.load(weight_path, map_location=torch.device(device)))
+
     # Optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
@@ -52,14 +55,18 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
     early_stopper = EarlyStopper(patience=3, min_delta=0.01)
 
     # plot data
-    plot_data = {
-        'train_loss': [],
-        'train_psnr': [],
-        'train_ssim': [],
-        'valid_loss': [],
-        'valid_psnr': [],
-        'valid_ssim': []
-    }
+    if (log_path == None):
+        plot_data = {
+            'train_loss': [],
+            'train_psnr': [],
+            'train_ssim': [],
+            'valid_loss': [],
+            'valid_psnr': [],
+            'valid_ssim': []
+        }
+    else:
+        with open(log_path, 'rb') as f:
+            loaded_dict = pickle.load(f)
 
     # Trainin Loop
     for epoch in range(epochs):
