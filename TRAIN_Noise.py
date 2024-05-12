@@ -91,7 +91,8 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
             gc.collect()
             torch.cuda.empty_cache()
 
-            print(f'*** Batch {i+1} / {len(train_dataloader)} ***')
+            if (i % 30 == 0):
+                print(f'*** Batch {i+1} / {len(train_dataloader)} ***')
         
             
         # calculate averages
