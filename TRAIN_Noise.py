@@ -108,7 +108,7 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
             torch.cuda.empty_cache()
 
             if (i % 30 == 0 and i!=0):
-                print(f'*** Batch {i+1} / {len(train_dataloader)}, Train Loss: {(Train_LOSS / i):.4f}, Train SSIM: {(Train_SSIM / i):.4f}, Train PSNR: {(Train_PSNR / i):.4f} ***')
+                print(f'*** Batch {i} / {len(train_dataloader)}, Train Loss: {(Train_LOSS / i):.4f}, Train SSIM: {(Train_SSIM / i):.4f}, Train PSNR: {(Train_PSNR / i):.4f} ***')
         
             
         # calculate averages
