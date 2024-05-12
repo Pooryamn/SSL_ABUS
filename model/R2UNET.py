@@ -128,12 +128,12 @@ class R2U_Net(nn.Module):
 
         d4 = self.Up4(d5)
         d4 = self.padding_func(e3, d4)
-        d4 = torch.cat((e3. d4), dim=1)
+        d4 = torch.cat((e3, d4), dim=1)
         d4 = self.Up_RRCNN4(d4)
 
         d3 = self.Up3(d4)
         d3 = self.padding_func(e2, d3)
-        d3 = torch.cat((e2. d3), dim=1)
+        d3 = torch.cat((e2, d3), dim=1)
         d3 = self.Up_RRCNN3(d3)
 
         d2 = self.Up2(d3)
