@@ -66,7 +66,7 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, we
         }
     else:
         with open(log_path, 'rb') as f:
-            loaded_dict = pickle.load(f)
+            plot_data = pickle.load(f)
 
     # Trainin Loop
     for epoch in range(epochs):
