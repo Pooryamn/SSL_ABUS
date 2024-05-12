@@ -1,22 +1,64 @@
 import torch
+from torch.utils.data import DataLoader
 import numpy as np
+import os
+import random
 
-# Function to generate noisy data
-def generate_noisy_data(data, noise_std):
-    # generate noise
-    r = 0.5 
-    noise = np.random.normal(0, noise_std, data.shape)
+# A custom class for loading volumes and masks
+class VolumeMaskDataset(torch.utils.data.Dataset):
+    def __init__(self, volume_dir, mask_dir, data_type, n_valid=50):
 
-    noisy_data = data + (data ** r) * noise
-    return noisy_data
+        self.file_names = os.listdir(mask_dir)
 
-# function to return input (noisy data) and output(original data)
-def Data_generator(data):
+        random.seed(1377)
+        self.validation_names = random.choices(self.file_names, k=n_valid)
 
-    noise_std = np.random.randint(10,60) / 100
-    noisy_data = generate_noisy_data(data, noise_std)
+        if (data_type == 'valid'):
+            self.volume_paths = [os.path.join(volume_dir, f) for f in self.validation_names]
+            self.mask_paths   = [os.path.join(mask_dir, f) for f in self.validation_names]
+        else:
+            self.train_names = [x for x in self.file_names if x not in self.validation_names]
+            self.volume_paths = [os.path.join(volume_dir, f) for f in self.train_names]
+            self.mask_paths   = [os.path.join(mask_dir, f) for f in self.train_names]
 
-    volume = torch.from_numpy(noisy_data).float().unsqueeze(0).unsqueeze(0)
-    mask = torch.from_numpy(data).float().unsqueeze(0).unsqueeze(0)
+        # Sort paths
+        self.volume_paths.sort()
+        self.mask_paths.sort()
+        
+        assert len(self.volume_paths) == len(self.mask_paths), "Unequal number of volumes and masks"
+    
+    def __len__(self):
+        return len(self.volume_paths)
+    
+    def __getitem__(self, idx):
+        volume_path = self.volume_paths[idx]
+        mask_path   = self.mask_paths[idx]
+        
+        
+        # Load Volume and mask
+        volume = np.load(volume_path)
+        mask   = np.load(mask_path)
+        
+        # Convert to Tensor
+        volume = torch.from_numpy(volume).float().unsqueeze(0)
+        mask   = torch.from_numpy(mask).float().unsqueeze(0)
+        
+        return volume, mask
 
-    return volume, mask
+def Test_Dataset_Class():
+    volume_dir = '/kaggle/input/tdscabus-train-patches/TDSC_Patches/Volumes'
+    mask_dir   = '/kaggle/input/tdscabus-train-patches/TDSC_Patches/Mask'
+    
+    # create dataset
+    dataset = VolumeMaskDataset(volume_dir, mask_dir)
+    
+    print(dataset[10])
+
+def DataLoaderCreator(volume_dir, mask_dir, batch_size, shuffle = True):
+    # Create dataset
+    dataset = VolumeMaskDataset(volume_dir, mask_dir)
+    
+    # create dataloader
+    dataloader = DataLoader(dataset, batch_size, shuffle)
+    
+    return dataloader
