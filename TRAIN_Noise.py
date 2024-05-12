@@ -12,7 +12,7 @@ from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
 from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
-from utils.Early_S
+from utils.early_stop import EarlyStopper
 
 
 def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
@@ -47,7 +47,7 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
     criterion = nn.MSELoss() # denoising Loss
 
     # early stop
-
+    early_stopper = EarlyStopper(patience=3, min_delta=0.01)
 
     # Trainin Loop
     for epoch in range(epochs):
@@ -153,6 +153,10 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
         # Save Best
         if (AVG_valid_psnr > Max_PSNR):
             torch.save(model.state_dict(), 'model.pth')
+        
+        # check for early stopping
+        if (early_stopper.early_stop(AVG_valid_loss)):
+            break            
 
         # EPOCH LOG
         print(f"******************** Epoch: {epoch+1}/{epochs}, Train Loss: {AVG_train_loss:.4f}, Validation Loss: {AVG_valid_loss:.4f}, Train SSIM: {AVG_train_ssim:.4f}, Validation SSIM: {AVG_valid_ssim:.4f}, Train PSNR: {AVG_train_psnr:.4f}, Validation PSNR: {AVG_valid_psnr:.4f}")
