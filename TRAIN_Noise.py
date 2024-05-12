@@ -6,6 +6,8 @@ import numpy as np
 # Memory management
 import gc
 
+import pickle
+
 from utils.dataloader_noise import DataLoaderCreator
 from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
@@ -48,6 +50,16 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
 
     # early stop
     early_stopper = EarlyStopper(patience=3, min_delta=0.01)
+
+    # plot data
+    plot_data = {
+        'train_loss': [],
+        'train_psnr': [],
+        'train_ssim': [],
+        'valid_loss': [],
+        'valid_psnr': [],
+        'valid_ssim': []
+    }
 
     # Trainin Loop
     for epoch in range(epochs):
@@ -149,6 +161,17 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
             AVG_valid_loss = Val_LOSS / len(test_dataloader)
             AVG_valid_psnr = Val_PSNR / len(test_dataloader)
             AVG_valid_ssim = Val_SSIM / len(test_dataloader)
+
+        # save epoch information
+        plot_data['train_loss'].append(AVG_train_loss)
+        plot_data['train_psnr'].append(AVG_train_psnr)
+        plot_data['train_ssim'].append(AVG_train_ssim)
+        plot_data['valid_loss'].append(AVG_valid_loss)
+        plot_data['valid_psnr'].append(AVG_valid_psnr)
+        plot_data['valid_ssim'].append(AVG_valid_ssim)
+
+        with open('Model_history.pkl', 'wb') as f:
+            pickle.dump(plot_data, f)
 
         # Save Best
         if (AVG_valid_psnr > Max_PSNR):
