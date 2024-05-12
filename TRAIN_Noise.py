@@ -1,18 +1,19 @@
 import sys
-import gc
 
 import torch
 import torch.nn as nn
-import numpy as np
+# Memory management
+import gc
 
+from utils.dataloader_noise import DataLoaderCreator
 from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
-from utils.dataloader_noise import Data_generator
 from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
 
-def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_dir, feature_maps):
+
+def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -21,8 +22,8 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
     # Parameters
     learning_rate = 0.001
 
-    train_data      = np.load(train_volume_dir)
-    validation_data = np.load(validation_volume_dir)
+    train_dataloader = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='train',n_valid=40)
+    test_dataloader  = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='valid', n_valid=40)
 
     if model == "Unet":
         # Create Model 
@@ -30,105 +31,133 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, validation_volume_di
 
     elif model == "Attention_Unet":
         model  = Attention_Unet(in_ch=1, out_ch=1, features=feature_maps).to(device)
-
+    
     elif model == "R2Unet":
         model = R2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
 
     else:
-        raise('Error in selecting the model')
+        raise('Error in selecing the model')
 
     # Optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
-    criterion = nn.MSELoss()
-    
+    criterion = nn.MSELoss() # denoising Loss
+
     # Trainin Loop
     for epoch in range(epochs):
     
         # Train model
         model.train()
     
-        train_loss = 0
-
-        (volumes, masks) = Data_generator(train_data)
-
-        volumes = volumes.to(device)
-        masks = masks.to(device)
-        # Forward Pass
-        outputs = model(volumes)
+        Train_LOSS = 0
+        Train_PSNR = 0
+        Train_SSIM = 0
+    
+        for i, (volumes, masks) in enumerate(train_dataloader):
         
-        # Memory related function
-        del volumes
+            volumes = volumes.to(device)
+            masks = masks.to(device)
         
-        # Calculate Loss
-        loss = criterion(outputs, masks)
-        train_loss += loss.item()
-
-        # Backward Pass
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+            # Forward Pass
+            outputs = model(volumes)
         
-        masks = masks.squeeze(0).squeeze(0)
-        outputs = outputs.squeeze(0).squeeze(0)
-
-        masks = masks.cpu().detach().numpy()
-        outputs = outputs.cpu().detach().numpy()
-
-        # metrics
-        Train_ssim_score = ssim(masks, outputs, full=True, data_range=1.0)
-        Train_ssim_score = Train_ssim_score[0]
-
-        Train_PSNR = PSNR(masks, outputs)
+            # Memory related function
+            del volumes
         
-        # Memory related function
-        del masks
-        gc.collect()
-        torch.cuda.empty_cache()
+            # Calculate Loss
+            loss = criterion(outputs, masks)
+            Train_LOSS += loss.item()
 
+            # Calculate metrics
+            # convert to numpy first
+            masks   = np.array(masks.squeeze(0).squeeze(0))
+            outputs = np.array(outputs.squeeze(0).squeeze(0))
+
+            SSIM = ssim(masks, outputs, full=True, data_range=1.0)
+            Train_SSIM += SSIM[0]
+
+            PSNR_score = PSNR(masks, outputs)
+            Train_PSNR += PSNR_score
+
+            # Backward Pass
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        
+            # Memory related function
+            del masks
+            gc.collect()
+            torch.cuda.empty_cache()
+
+            print(f'*** Batch {i+1} / {len(train_dataloader)} ***')
+        
+            
+        # calculate averages
+        AVG_train_loss = Train_LOSS / len(train_dataloader)
+        AVG_train_psnr = Train_PSNR / len(train_dataloader)
+        AVG_train_ssim = Train_SSIM / len(train_dataloader)
     
         # Evaluation 
         model.eval()
     
         with torch.no_grad():
         
-            val_loss = 0
-
-            (volumes, masks) = Data_generator(validation_data)
+            Val_LOSS = 0
+            Val_PSNR = 0
+            Val_SSIM = 0
         
-            volumes = volumes.to(device)
-            masks   = masks.to(device)
+            for j, (volumes, masks) in enumerate(test_dataloader):
             
-            # Forward pass
-            outputs = model(volumes)
+                volumes = volumes.to(device)
+                masks   = masks.to(device)
             
-            # Memory related function
-            del volumes
+                # Forward pass
+                outputs = model(volumes)
             
-            # Calculate Loss
-            loss = criterion(outputs, masks)
-            val_loss += loss.item()
+                # Memory related function
+                del volumes
             
-            # metrics
-            masks = masks.squeeze(0).squeeze(0)
-            outputs = outputs.squeeze(0).squeeze(0)
+                # Calculate Loss
+                loss = criterion(outputs, masks)
+                Val_LOSS += loss.item()
 
-            masks = masks.cpu().detach().numpy()
-            outputs = outputs.cpu().detach().numpy()
+                # Calculate metrics
+                # convert to numpy first
+                masks   = np.array(masks.squeeze(0).squeeze(0))
+                outputs = np.array(outputs.squeeze(0).squeeze(0))
 
-            Valid_ssim_score = ssim(masks, outputs, full=True, data_range=1.0)
-            Valid_ssim_score = Valid_ssim_score[0]
+                SSIM = ssim(masks, outputs, full=True, data_range=1.0)
+                Val_SSIM += SSIM[0]
 
-            Valid_PSNR = PSNR(masks, outputs)
+                PSNR_score = PSNR(masks, outputs)
+                Val_PSNR += PSNR_score
             
-            # Memory related function
-            del masks
-            gc.collect()
-            torch.cuda.empty_cache()
+                # Memory related function
+                del masks
+                gc.collect()
+                torch.cuda.empty_cache()
+        
+            # calculate averages
+            AVG_valid_loss = Val_LOSS / len(test_dataloader)
+            AVG_valid_psnr = Val_PSNR / len(test_dataloader)
+            AVG_valid_ssim = Val_SSIM / len(test_dataloader)
+
         
         # EPOCH LOG
-        print(f"********** Epoch: {epoch+1}/{epochs},Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}, Train PSNR: {Train_PSNR:.4f}, Validation PSNR: {Valid_PSNR:.4f}, Train SSIM: {Train_ssim_score:.4f}, Validation SSIM: {Valid_ssim_score:.4f}")
+        print(f"******************** Epoch: {epoch+1}/{epochs}, Train Loss: {AVG_train_loss:.4f}, Validation Loss: {AVG_valid_loss:.4f}, Train SSIM: {AVG_train_ssim:.4f}, Validation SSIM: {AVG_valid_ssim:.4f}, Train PSNR: {AVG_train_psnr:.4f}, Validation PSNR: {AVG_valid_psnr:.4f}")
 
-        
     torch.save(model.state_dict(), 'model.pth')
+
+
+
+TRAIN_Func(
+    epochs = 1,
+    batch_size = 1,
+    model = 'Attention_Unet',
+    train_volume_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Volumes',
+    train_mask_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Mask',
+    test_volume_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Volumes',
+    test_mask_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Mask',
+    feature_maps = [16,32,64,128,256]
+    )
