@@ -12,6 +12,7 @@ from utils.dataloader_noise import DataLoaderCreator
 from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
+from model.ATTR2_UNET import ATTR2U_Net
 from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
 from utils.early_stop import EarlyStopper
@@ -38,6 +39,9 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, we
     
     elif model == "R2Unet":
         model = R2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
+
+    elif model == "AttR2Unet":
+        model = ATTR2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
 
     else:
         raise('Error in selecing the model')
@@ -182,7 +186,8 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, we
 
         # Save Best
         if (AVG_valid_psnr > Max_PSNR):
-            torch.save(model.state_dict(), 'model.pth')
+            model_name = model + '.pth'
+            torch.save(model.state_dict(), model_name)
         
         # check for early stopping
         if (early_stopper.early_stop(AVG_valid_loss)):
