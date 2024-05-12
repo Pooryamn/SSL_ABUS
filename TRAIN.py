@@ -9,7 +9,9 @@ from utils.dataloader import DataLoaderCreator
 from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
-from utils.metrics import dice_score
+from utils.metrics import PSNR
+from skimage.metrics import structural_similarity as ssim
+
 
 def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps):
     
