@@ -102,10 +102,11 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
         model.eval()
     
         with torch.no_grad():
-        
+               
             Val_LOSS = 0
             Val_PSNR = 0
             Val_SSIM = 0
+            Max_PSNR = 0
         
             for j, (volumes, masks) in enumerate(test_dataloader):
             
@@ -143,11 +144,13 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
             AVG_valid_psnr = Val_PSNR / len(test_dataloader)
             AVG_valid_ssim = Val_SSIM / len(test_dataloader)
 
-        
+        # Save Best
+        if (AVG_valid_psnr > Max_PSNR):
+            torch.save(model.state_dict(), 'model.pth')
+
         # EPOCH LOG
         print(f"******************** Epoch: {epoch+1}/{epochs}, Train Loss: {AVG_train_loss:.4f}, Validation Loss: {AVG_valid_loss:.4f}, Train SSIM: {AVG_train_ssim:.4f}, Validation SSIM: {AVG_valid_ssim:.4f}, Train PSNR: {AVG_train_psnr:.4f}, Validation PSNR: {AVG_valid_psnr:.4f}")
 
-    torch.save(model.state_dict(), 'model.pth')
 
 
 
