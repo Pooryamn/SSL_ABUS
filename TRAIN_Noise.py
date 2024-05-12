@@ -72,8 +72,8 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
 
             # Calculate metrics
             # convert to numpy first
-            masks   = np.array(masks.squeeze(0).squeeze(0).detach().numpy())
-            outputs = np.array(outputs.squeeze(0).squeeze(0).detach().numpy())
+            masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
+            outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
             SSIM = ssim(masks, outputs, full=True, data_range=1.0)
             Train_SSIM += SSIM[0]
@@ -126,8 +126,8 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
 
                 # Calculate metrics
                 # convert to numpy first
-                masks   = np.array(masks.squeeze(0).squeeze(0).detach().numpy())
-                outputs = np.array(outputs.squeeze(0).squeeze(0).detach().numpy())
+                masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
+                outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
                 SSIM = ssim(masks, outputs, full=True, data_range=1.0)
                 Val_SSIM += SSIM[0]
