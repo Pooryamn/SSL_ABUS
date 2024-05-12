@@ -12,6 +12,7 @@ from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
 from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
+from utils.Early_S
 
 
 def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
@@ -44,6 +45,9 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps):
 
     # Loss Funcrion
     criterion = nn.MSELoss() # denoising Loss
+
+    # early stop
+
 
     # Trainin Loop
     for epoch in range(epochs):
