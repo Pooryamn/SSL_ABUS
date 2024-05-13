@@ -19,7 +19,7 @@ from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
 
 
-def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
+def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -28,17 +28,17 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, le
     train_dataloader = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='train',n_valid=40)
     test_dataloader  = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='valid', n_valid=40)
 
-    if model == "Unet":
+    if model_name == "Unet":
         # Create Model 
-        model = UNet(in_ch=1, out_ch=1, features=feature_maps).to(device)
+        model_name = UNet(in_ch=1, out_ch=1, features=feature_maps).to(device)
 
-    elif model == "Attention_Unet":
+    elif model_name == "Attention_Unet":
         model  = Attention_Unet(in_ch=1, out_ch=1, features=feature_maps).to(device)
     
-    elif model == "R2Unet":
+    elif model_name == "R2Unet":
         model = R2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
 
-    elif model == "AttR2Unet":
+    elif model_name == "AttR2Unet":
         model = ATTR2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
 
     else:
@@ -186,7 +186,7 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, le
 
         # Save Best
         if (AVG_valid_psnr > Max_PSNR):
-            model_name = model + '.pth'
+            model_name = model_name + '.pth'
             torch.save(model.state_dict(), model_name)
         
         # check for early stopping
