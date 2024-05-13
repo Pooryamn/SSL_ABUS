@@ -18,14 +18,11 @@ from skimage.metrics import structural_similarity as ssim
 from utils.early_stop import EarlyStopper
 
 
-def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, weight_path = None, log_path = None):
+def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
-
-    # Parameters
-    learning_rate = 0.001
 
     train_dataloader = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='train',n_valid=40)
     test_dataloader  = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='valid', n_valid=40)
