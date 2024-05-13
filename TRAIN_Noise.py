@@ -16,9 +16,10 @@ from model.ATTR2_UNET import ATTR2U_Net
 from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
 from utils.early_stop import EarlyStopper
+from utils.weight_init import WEIGHT_INITIALIZATION
 
 
-def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None):
+def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -45,6 +46,8 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, le
 
     if (weight_path != None):
         model.load_state_dict(torch.load(weight_path, map_location=torch.device(device)))
+    elif (weight_init != None):
+        WEIGHT_INITIALIZATION(model, weight_init)
 
     # Optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
