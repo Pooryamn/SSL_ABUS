@@ -188,6 +188,7 @@ def TRAIN_Func(epochs, batch_size, model, volume_dir, mask_dir, feature_maps, le
         
         # check for early stopping
         if (early_stopper.early_stop(AVG_valid_loss)):
+            print(f'########## Eearly stop in epoch {epoch+1}')
             break            
 
         # EPOCH LOG
