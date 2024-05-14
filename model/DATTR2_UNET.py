@@ -6,12 +6,12 @@ from model.R2UNET import Up
 from model.ATT_UNET import Attention_block
 from model.Attention_modules import CBAM
 
-class ATTR2U_Net(nn.Module):
+class DoubleATTR2U_Net(nn.Module):
     """
     Residual Recurrent Unet with base Attention Blobks
     """
     def __init__(self, in_ch=1, out_ch=1, features=[32,64,128,256,512], t=2):
-        super(ATTR2U_Net, self).__init__()
+        super(DoubleATTR2U_Net, self).__init__()
 
         self.Maxpool1 = nn.MaxPool3d(2, stride=2)
         self.Maxpool2 = nn.MaxPool3d(2, stride=2)
