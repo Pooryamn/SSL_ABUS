@@ -4,6 +4,7 @@ import torch.nn as nn
 from model.R2UNET import RRCNN_Block
 from model.R2UNET import Up
 from model.ATT_UNET import Attention_block
+from model.Attention_modules import CBAM
 
 class ATTR2U_Net(nn.Module):
     """
@@ -18,10 +19,19 @@ class ATTR2U_Net(nn.Module):
         self.Maxpool4 = nn.MaxPool3d(2, stride=2)
 
         self.RRCNN1 = RRCNN_Block(in_ch, features[0], t=t)
+        self.CBAM1 = CBAM(features[0])
+
         self.RRCNN2 = RRCNN_Block(features[0], features[1], t=t)
+        self.CBAM2 = CBAM(features[1])
+
         self.RRCNN3 = RRCNN_Block(features[1], features[2], t=t)
+        self.CBAM3 = CBAM(features[2])
+
         self.RRCNN4 = RRCNN_Block(features[2], features[3], t=t)
+        self.CBAM4 = CBAM(features[3])
+
         self.RRCNN5 = RRCNN_Block(features[3], features[4], t=t)
+        self.CBAM5 = CBAM(features[4])
 
         self.Up5 = Up(features[4], features[3])
         self.Att5 = Attention_block(F_g=features[3], F_l=features[3], F_int=features[2])
