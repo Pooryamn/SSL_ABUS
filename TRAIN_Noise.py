@@ -58,6 +58,9 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
     # early stop
     early_stopper = EarlyStopper(patience=3, min_delta=0.01)
 
+    # create a suitable name for saving the weights
+    model_name = model_name + '.pth'
+
     # plot data
     if (log_path == None):
         plot_data = {
@@ -186,7 +189,6 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
 
         # Save Best
         if (AVG_valid_psnr > Max_PSNR):
-            model_name = model_name + '.pth'
             torch.save(model.state_dict(), model_name)
         
         # check for early stopping
