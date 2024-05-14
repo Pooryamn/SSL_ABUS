@@ -24,6 +24,13 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         # Sort paths
         self.volume_paths.sort()
         self.mask_paths.sort()
+
+        # Debugging 
+        print('Debug')
+        print(len(self.volume_paths))
+        print(len(self.mask_paths))
+        print(self.volume_paths)
+        print(self.mask_paths)
         
         assert len(self.volume_paths) == len(self.mask_paths), "Unequal number of volumes and masks"
     
