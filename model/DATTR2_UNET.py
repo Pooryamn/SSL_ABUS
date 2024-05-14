@@ -54,20 +54,25 @@ class ATTR2U_Net(nn.Module):
     def forward(self, x):
         
         e1 = self.RRCNN1(x)
+        Att_e1 = self.CBAM1(e1)
 
-        e2 = self.Maxpool1(e1)
+        e2 = self.Maxpool1(Att_e1)
         e2 = self.RRCNN2(e2)
+        Att_e2 = self.CBAM2(e2)
 
-        e3 = self.Maxpool2(e2)
+        e3 = self.Maxpool2(Att_e2)
         e3 = self.RRCNN3(e3)
+        Att_e3 = self.CBAM3(e3)
 
-        e4 = self.Maxpool3(e3)
+        e4 = self.Maxpool3(Att_e3)
         e4 = self.RRCNN4(e4)
+        Att_e4 = self.CBAM4(e4)
 
-        e5 = self.Maxpool4(e4)
+        e5 = self.Maxpool4(Att_e4)
         e5 = self.RRCNN5(e5)
+        Att_e5 = self.CBAM5(e5)
 
-        d5 = self.Up5(e5)
+        d5 = self.Up5(Att_e5)
         e4 = self.Att5(g=d5, x=e4)
         d5 = self.padding_func(e4, d5)
         d5 = torch.cat((e4, d5), dim=1)
