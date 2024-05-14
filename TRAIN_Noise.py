@@ -13,6 +13,7 @@ from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
 from model.ATTR2_UNET import ATTR2U_Net
+from model.DATTR2_UNET import DoubleATTR2U_Net
 from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
 from utils.early_stop import EarlyStopper
@@ -40,6 +41,9 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
 
     elif model_name == "AttR2Unet":
         model = ATTR2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
+
+    elif model_name == 'DAttR2Unet':
+        model = DoubleATTR2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
 
     else:
         raise('Error in selecing the model')
