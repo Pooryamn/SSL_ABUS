@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from skimage.metrics import structural_similarity as ssim
+from torchmetrics.image import StructuralSimilarityIndexMeasure
 
 class DiceLoss(nn.Module):
     def __init__(self, weight=None, size_average=True):
@@ -80,6 +80,8 @@ class FocalLoss(nn.Module):
 class DualSSIMLoss(nn.Module):
     def __init__(self, ALPHA, BETA):
         super(DualSSIMLoss, self).__init__()
+
+        self.ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0)
         
         self.alpha = ALPHA
         self.beta = BETA
@@ -87,11 +89,11 @@ class DualSSIMLoss(nn.Module):
     def forward(self, predictions, inputs, targets):
 
         # calculate SSIM between target and prediction
-        SSIM_pred_target = ssim(targets, predictions, full=False, data_range=1.0)
+        SSIM_pred_target = ssim(targets, predictions)
         Loss1 = 1 - SSIM_pred_target
 
         # calculate SSIM between Input and prediction
-        SSIM_pred_input = ssim(inputs, predictions, full=False, data_range=1.0)
+        SSIM_pred_input = ssim(inputs, predictions)
         Loss2 = 1 - SSIM_pred_input
 
         Loss = (self.alpha * SSIM_pred_target) + (self.beta * SSIM_pred_input)
