@@ -18,6 +18,7 @@ from utils.metrics import PSNR
 from skimage.metrics import structural_similarity as ssim
 from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
+from utils.losses import DualSSIMLoss
 
 
 def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
@@ -57,7 +58,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
-    criterion = nn.MSELoss() # denoising Loss
+    criterion =  DualSSIMLoss(ALPHA= 5.0, BETA= 3.0) # denoising Loss
 
     # early stop
     early_stopper = EarlyStopper(patience=3, min_delta=0.01)
@@ -101,7 +102,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             del volumes
         
             # Calculate Loss
-            loss = criterion(outputs, masks)
+            loss = criterion(outputs, volumes, masks)
             Train_LOSS += loss.item()
 
             # Calculate metrics
@@ -156,7 +157,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 del volumes
             
                 # Calculate Loss
-                loss = criterion(outputs, masks)
+                loss = criterion(outputs, volumes, masks)
                 Val_LOSS += loss.item()
 
                 # Calculate metrics
