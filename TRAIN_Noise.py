@@ -109,8 +109,8 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
             outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
-            SSIM = ssim(masks, outputs, full=True, data_range=1.0)
-            Train_SSIM += SSIM[0]
+            SSIM = ssim(masks, outputs, full=False, data_range=1.0)
+            Train_SSIM += SSIM
 
             PSNR_score = PSNR(masks, outputs)
             Train_PSNR += PSNR_score
@@ -164,8 +164,8 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
                 outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
-                SSIM = ssim(masks, outputs, full=True, data_range=1.0)
-                Val_SSIM += SSIM[0]
+                SSIM = ssim(masks, outputs, full=False, data_range=1.0)
+                Val_SSIM += SSIM
 
                 PSNR_score = PSNR(masks, outputs)
                 Val_PSNR += PSNR_score
