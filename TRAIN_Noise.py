@@ -109,7 +109,6 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             del volumes
 
             # metrics
-            SSIM = 1 - SSIM
             Train_SSIM += SSIM
 
             # convert to numpy first
@@ -163,7 +162,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 # Memory related function
                 del volumes
 
-                SSIM = 1 - SSIM
+                # metrics
                 Val_SSIM += SSIM
 
                 # convert to numpy first
