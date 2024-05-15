@@ -7,6 +7,7 @@ import numpy as np
 import gc
 
 import pickle
+from torchmetrics.image import StructuralSimilarityIndexMeasure
 
 from utils.dataloader_noise import DataLoaderCreator
 from model.UNET import UNet
@@ -15,7 +16,6 @@ from model.R2UNET import R2U_Net
 from model.ATTR2_UNET import ATTR2U_Net
 from model.DATTR2_UNET import DoubleATTR2U_Net
 from utils.metrics import PSNR
-from skimage.metrics import structural_similarity as ssim
 from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
 from utils.losses import DualSSIMLoss
@@ -62,6 +62,9 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
 
     # early stop
     early_stopper = EarlyStopper(patience=3, min_delta=0.01)
+
+    # create ssim metric instance
+    ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0)
 
     # create a suitable name for saving the weights
     model_name = model_name + '.pth'
@@ -110,7 +113,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
             outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
-            SSIM = ssim(masks, outputs, full=False, data_range=1.0)
+            SSIM = ssim(masks, outputs)
             Train_SSIM += SSIM
 
             PSNR_score = PSNR(masks, outputs)
@@ -165,7 +168,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
                 outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
-                SSIM = ssim(masks, outputs, full=False, data_range=1.0)
+                SSIM = ssim(masks, outputs)
                 Val_SSIM += SSIM
 
                 PSNR_score = PSNR(masks, outputs)
