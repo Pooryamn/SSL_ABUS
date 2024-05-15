@@ -108,11 +108,6 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             loss = criterion(outputs, volumes, masks)
             Train_LOSS += loss.item()
 
-            # Calculate metrics
-            # convert to numpy first
-            masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
-            outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
-
             SSIM = ssim(masks, outputs)
             Train_SSIM += SSIM
 
@@ -163,10 +158,6 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 loss = criterion(outputs, volumes, masks)
                 Val_LOSS += loss.item()
 
-                # Calculate metrics
-                # convert to numpy first
-                masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
-                outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
                 SSIM = ssim(masks, outputs)
                 Val_SSIM += SSIM
