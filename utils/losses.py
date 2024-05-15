@@ -98,6 +98,6 @@ class DualSSIMLoss(nn.Module):
 
         Loss = (self.alpha * SSIM_pred_target) + (self.beta * SSIM_pred_input)
 
-        return Loss, Loss1
+        return Loss, SSIM_pred_target
 
         
