@@ -60,7 +60,7 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         mask = (mask - mask.min()) / (mask.max() - mask.min())
 
         # transpose:
-        mask = np.traspose(mask, (1,0,2))
+        mask = np.transpose(mask, (1,0,2))
 
         x1, x2, y1, y2, z1, z2 = self.masking_coordinate_generator(mask.shape, self.xy_range, self.z_range)
 
