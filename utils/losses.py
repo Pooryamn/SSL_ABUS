@@ -89,11 +89,11 @@ class DualSSIMLoss(nn.Module):
     def forward(self, predictions, inputs, targets):
 
         # calculate SSIM between target and prediction
-        SSIM_pred_target = ssim(targets, predictions)
+        SSIM_pred_target = self.ssim(targets, predictions)
         Loss1 = 1 - SSIM_pred_target
 
         # calculate SSIM between Input and prediction
-        SSIM_pred_input = ssim(inputs, predictions)
+        SSIM_pred_input = self.ssim(inputs, predictions)
         Loss2 = 1 - SSIM_pred_input
 
         Loss = (self.alpha * SSIM_pred_target) + (self.beta * SSIM_pred_input)
