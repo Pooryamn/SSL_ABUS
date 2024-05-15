@@ -64,7 +64,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
     early_stopper = EarlyStopper(patience=3, min_delta=0.01)
 
     # create ssim metric instance
-    ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0).to(device)
+    #ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0).to(device)
 
     # create a suitable name for saving the weights
     model_name = model_name + '.pth'
