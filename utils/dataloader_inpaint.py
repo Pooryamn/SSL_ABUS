@@ -46,7 +46,7 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         [mask_path, metadata] = mask_path.split('#')
         
         # Load Volume
-        mask = np.load(mask_path)
+        mask = np.load(mask_path)['arr_0']
         # Debug 2
         print(f'first mask shape: {mask.shape}')
 
