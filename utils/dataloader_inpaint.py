@@ -68,7 +68,15 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         return volume, mask
 
     def masking_coordinate_generator(self, img_shape,xy_range=[50, 80], z_range=[7, 10]):
-        pass
+        Width = Height = np.random.randint(low= xy_range[0], high=xy_range[1])
+        Depth = np.random.randint(low= z_range[0], high=z_range[1])
+
+        X_value = np.random.randint(low=xy_range[1] + 20, high=img_shape[0] - xy_range[1] - 20)
+        Y_value = np.random.randint(low=xy_range[1] + 20, high=img_shape[1] - xy_range[1] - 20)
+        Z_value = np.random.randint(low=z_range[1], high=img_shape[2] - z_range[1])
+
+        return X_value, X_value + Width, Y_value, Y_value + Height, Z_value, Z_value + Depth
+        
 
 def DataLoaderCreator(volume_dir, batch_size, data_type, n_valid=14, shuffle = True):
     # Create dataset
