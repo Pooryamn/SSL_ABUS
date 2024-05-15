@@ -61,7 +61,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
     criterion =  DualSSIMLoss(ALPHA= 5.0, BETA= 3.0).to(device) # denoising Loss
 
     # early stop
-    early_stopper = EarlyStopper(patience=3, min_delta=0.01)
+    early_stopper = EarlyStopper(patience=4, min_delta=0.3)
 
     # create ssim metric instance
     #ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0).to(device)
