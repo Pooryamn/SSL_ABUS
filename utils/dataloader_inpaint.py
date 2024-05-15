@@ -51,15 +51,6 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         
         return volume, mask
 
-def Test_Dataset_Class():
-    volume_dir = '/kaggle/input/tdscabus-train-patches/TDSC_Patches/Volumes'
-    mask_dir   = '/kaggle/input/tdscabus-train-patches/TDSC_Patches/Mask'
-    
-    # create dataset
-    dataset = VolumeMaskDataset(volume_dir, mask_dir)
-    
-    print(dataset[10])
-
 def DataLoaderCreator(volume_dir, batch_size, data_type, n_valid=14, shuffle = True):
     # Create dataset
     dataset = VolumeMaskDataset(volume_dir, data_type, n_valid)
