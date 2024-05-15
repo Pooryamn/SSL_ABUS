@@ -41,18 +41,26 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
     
     def __getitem__(self, idx):
         mask_path = self.mask_paths[idx]
+        # Debug 1
+        print(f'mask_path: {mask_path}')
         [mask_path, metadata] = mask_path.split('#')
         
         # Load Volume
         mask = np.load(mask_path)
+        # Debug 2
+        print(f'first mask shape: {mask.shape}')
 
         start, patch_no = metadata.split(',')
         start = int(start)
+        # Debug 3
+        print(f'Start: {start}')
         patch_no = int(patch_no)
 
         if patch_no == 0:
             # 0:250
-            mask = mask[:250, :, start:start+32]
+            mask2 = mask[:250, :, start:start+32]
+            #Debug 4
+            print(f'second mask shape:{mask2.shape}')
         else:
             #250:500
             mask = mask[250:, :, start:start+32]
