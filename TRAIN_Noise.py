@@ -101,12 +101,12 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             # Forward Pass
             outputs = model(volumes)
         
-            # Memory related function
-            del volumes
-        
             # Calculate Loss
             loss = criterion(outputs, volumes, masks)
             Train_LOSS += loss.item()
+
+            # Memory related function
+            del volumes
 
             SSIM = ssim(masks, outputs)
             Train_SSIM += SSIM
@@ -151,13 +151,12 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 # Forward pass
                 outputs = model(volumes)
             
-                # Memory related function
-                del volumes
-            
                 # Calculate Loss
                 loss = criterion(outputs, volumes, masks)
                 Val_LOSS += loss.item()
 
+                # Memory related function
+                del volumes
 
                 SSIM = ssim(masks, outputs)
                 Val_SSIM += SSIM
