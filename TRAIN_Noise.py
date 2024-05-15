@@ -100,6 +100,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
         
             # Forward Pass
             outputs = model(volumes)
+            outputs.to(device)
         
             # Calculate Loss
             loss = criterion(outputs, volumes, masks)
@@ -155,6 +156,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             
                 # Forward pass
                 outputs = model(volumes)
+                outputs.to(device)
             
                 # Calculate Loss
                 loss = criterion(outputs, volumes, masks)
