@@ -57,9 +57,13 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
             #250:500
             mask = mask[250:, :, start:start+32]
 
+        mask = (mask - mask.min()) / (mask.max() - mask.min())
 
+        x1, x2, y1, y2, z1, z2 = self.masking_coordinate_generator(mask.shape, self.xy_range, self.z_range)
 
-        mask   = np.load(mask_path)
+        # here volume is a patch of data with a randon black cube within
+        volume = mask.copy()
+        volume[x1:x2, y1:y2, z1:z2] = 0
         
         # Convert to Tensor
         volume = torch.from_numpy(volume).float().unsqueeze(0)
