@@ -6,15 +6,18 @@ import random
 
 # A custom class for loading volumes and masks
 class VolumeMaskDataset(torch.utils.data.Dataset):
-    def __init__(self, volume_dir, mask_dir, data_type, n_valid=50):
+    def __init__(self, volume_dir, data_type, n_valid=14):
 
-        self.file_names = os.listdir(mask_dir)
+        self.file_names = os.listdir(volume_dir)
+        All_idx = np.arange(0, len(volume_dir))
 
-        random.seed(1377)
-        self.validation_names = random.choices(self.file_names, k=n_valid)
+        np.random.seed(1377)
+        Valid_idx = np.random.choice(All_idx, n_valid, replace=False)
 
+        # Here
+        
         if (data_type == 'valid'):
-            self.volume_paths = [os.path.join(volume_dir, f) for f in self.validation_names]
+            self.file_names = [os.path.join(volume_dir, f) for f in self.validation_names]
             self.mask_paths   = [os.path.join(mask_dir, f) for f in self.validation_names]
         else:
             self.train_names = [x for x in self.file_names if x not in self.validation_names]
