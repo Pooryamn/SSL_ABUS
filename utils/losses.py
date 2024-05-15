@@ -96,7 +96,7 @@ class DualSSIMLoss(nn.Module):
         SSIM_pred_input = self.ssim(inputs, predictions)
         Loss2 = 1 - SSIM_pred_input
 
-        Loss = (self.alpha * SSIM_pred_target) + (self.beta * SSIM_pred_input)
+        Loss = (self.alpha * Loss1) + (self.beta * Loss2)
 
         return Loss, SSIM_pred_target
 
