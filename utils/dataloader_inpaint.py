@@ -8,28 +8,31 @@ import random
 class VolumeMaskDataset(torch.utils.data.Dataset):
     def __init__(self, volume_dir, data_type, n_valid=14):
 
-        self.file_names = os.listdir(volume_dir)
-        All_idx = np.arange(0, len(volume_dir))
+        self.file_names = [os.path.join(volume_dir, f) for f in os.listdir(volume_dir)]
+        All_idx = np.arange(0, len(self.file_names))
 
         np.random.seed(1377)
         Valid_idx = np.random.choice(All_idx, n_valid, replace=False)
-
-        # Here
         
+        # split data
         if (data_type == 'valid'):
-            self.file_names = [os.path.join(volume_dir, f) for f in self.validation_names]
-            self.mask_paths   = [os.path.join(mask_dir, f) for f in self.validation_names]
+            self.file_names = [self.file_names[i] for i in Valid_idx]
         else:
-            self.train_names = [x for x in self.file_names if x not in self.validation_names]
-            self.volume_paths = [os.path.join(volume_dir, f) for f in self.train_names]
-            self.mask_paths   = [os.path.join(mask_dir, f) for f in self.train_names]
+            Train_idx = np.array([x for x in All_idx if x not in Valid_idx])
+            self.file_names = [self.file_names[i] for i  in Train_idx]
 
-        # Sort paths
-        self.volume_paths.sort()
-        self.mask_paths.sort()
+        self.volume_path = []
+        for name in file_names:
+            for i in range(25):
+                start = str(i * 32)
+
+                for j in range(2):
+                    TMP = name + '#' + start + ',' + str(j)
+                    self.volume_path.append(TMP)
         
-        assert len(self.volume_paths) == len(self.mask_paths), "Unequal number of volumes and masks"
-    
+        # Log
+        print(f'Number of patches for {data_type} set : {len(self.volume_path)}')
+
     def __len__(self):
         return len(self.volume_paths)
     
