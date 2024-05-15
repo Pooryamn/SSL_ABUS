@@ -38,11 +38,23 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
     
     def __getitem__(self, idx):
         volume_path = self.volume_paths[idx]
-        mask_path   = self.mask_paths[idx]
+        [volume_path, metadata] = volume_path.split('#')
         
-        
-        # Load Volume and mask
+        # Load Volume
         volume = np.load(volume_path)
+
+        start, patch_no = metadata.split(',')
+        start = int(start)
+        patch_no = int(patch_no)
+
+        if patch_no == 0:
+            # 0:250
+            volume = volume[:250, :, start:start+32]
+        else:
+            #250:500
+            volume = volume[250:, :, start:start+32]
+            
+
         mask   = np.load(mask_path)
         
         # Convert to Tensor
