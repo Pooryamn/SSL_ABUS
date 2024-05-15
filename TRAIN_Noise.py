@@ -108,8 +108,13 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             # Memory related function
             del volumes
 
+            # metrics
             SSIM = ssim(masks, outputs)
             Train_SSIM += SSIM
+
+            # convert to numpy first
+            masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
+            outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
             PSNR_score = PSNR(masks, outputs)
             Train_PSNR += PSNR_score
@@ -160,6 +165,10 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
 
                 SSIM = ssim(masks, outputs)
                 Val_SSIM += SSIM
+
+                # convert to numpy first
+                masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
+                outputs = np.array(outputs.squeeze(0).squeeze(0).cpu().detach().numpy())
 
                 PSNR_score = PSNR(masks, outputs)
                 Val_PSNR += PSNR_score
