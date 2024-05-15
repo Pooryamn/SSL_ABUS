@@ -22,7 +22,7 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
             self.file_names = [self.file_names[i] for i  in Train_idx]
 
         self.volume_path = []
-        for name in file_names:
+        for name in self.file_names:
             for i in range(25):
                 start = str(i * 32)
 
