@@ -7,7 +7,7 @@ import numpy as np
 import gc
 
 import pickle
-from torchmetrics.image import StructuralSimilarityIndexMeasure
+#from torchmetrics.image import StructuralSimilarityIndexMeasure
 
 from utils.dataloader_noise import DataLoaderCreator
 from model.UNET import UNet
@@ -102,14 +102,14 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             outputs = model(volumes)
         
             # Calculate Loss
-            loss = criterion(outputs, volumes, masks)
+            loss, SSIM = criterion(outputs, volumes, masks)
             Train_LOSS += loss.item()
 
             # Memory related function
             del volumes
 
             # metrics
-            SSIM = ssim(masks, outputs)
+            SSIM = 1 - SSIM
             Train_SSIM += SSIM
 
             # convert to numpy first
@@ -157,13 +157,13 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 outputs = model(volumes)
             
                 # Calculate Loss
-                loss = criterion(outputs, volumes, masks)
+                loss, SSIM = criterion(outputs, volumes, masks)
                 Val_LOSS += loss.item()
 
                 # Memory related function
                 del volumes
 
-                SSIM = ssim(masks, outputs)
+                SSIM = 1 - SSIM
                 Val_SSIM += SSIM
 
                 # convert to numpy first
