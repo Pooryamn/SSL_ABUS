@@ -20,14 +20,14 @@ from utils.weight_init import WEIGHT_INITIALIZATION
 from utils.losses import SSIMLoss
 
 
-def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
+def TRAIN_Func(epochs, batch_size, model_name, volume_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
-    train_dataloader = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='train',n_valid=40)
-    test_dataloader  = DataLoaderCreator(volume_dir, mask_dir, batch_size, data_type='valid', n_valid=40)
+    train_dataloader = DataLoaderCreator(volume_dir, batch_size, data_type='train', n_valid=14)
+    test_dataloader  = DataLoaderCreator(volume_dir, batch_size, data_type='valid', n_valid=14)
 
     if model_name == "Unet":
         # Create Model 
@@ -57,13 +57,10 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
-    criterion =  DualSSIMLoss(ALPHA= 5.0, BETA= 3.0).to(device) # denoising Loss
+    criterion =  SSIMLoss().to(device) # inpainting Loss
 
     # early stop
     early_stopper = EarlyStopper(patience=4, min_delta=0.3)
-
-    # create ssim metric instance
-    #ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0).to(device)
 
     # create a suitable name for saving the weights
     model_name = model_name + '.pth'
@@ -101,14 +98,14 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             outputs = model(volumes)
         
             # Calculate Loss
-            loss, SSIM = criterion(outputs, volumes, masks)
+            loss, SSIM = criterion(outputs, masks)
             Train_LOSS += loss.item()
 
             # Memory related function
             del volumes
 
             # metrics
-            Train_SSIM += SSIM
+            Train_SSIM += SSIM.item()
 
             # convert to numpy first
             masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
@@ -144,7 +141,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             Val_LOSS = 0
             Val_PSNR = 0
             Val_SSIM = 0
-            Max_PSNR = 0
+            Max_SSIM = 0
         
             for j, (volumes, masks) in enumerate(test_dataloader):
             
@@ -155,14 +152,14 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 outputs = model(volumes)
             
                 # Calculate Loss
-                loss, SSIM = criterion(outputs, volumes, masks)
+                loss, SSIM = criterion(outputs, masks)
                 Val_LOSS += loss.item()
 
                 # Memory related function
                 del volumes
 
                 # metrics
-                Val_SSIM += SSIM
+                Val_SSIM += SSIM.item()
 
                 # convert to numpy first
                 masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
@@ -193,9 +190,10 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             pickle.dump(plot_data, f)
 
         # Save Best
-        if (AVG_valid_psnr > Max_PSNR):
+        if (AVG_valid_ssim > Max_SSIM):
             
-            torch.save(model.state_dict(), model_name)          
+            torch.save(model.state_dict(), model_name)
+            Max_SSIM = AVG_valid_ssim       
 
         # EPOCH LOG
         print(f"******************** Epoch: {epoch+1}/{epochs}, Train Loss: {AVG_train_loss:.4f}, Validation Loss: {AVG_valid_loss:.4f}, Train SSIM: {AVG_train_ssim:.4f}, Validation SSIM: {AVG_valid_ssim:.4f}, Train PSNR: {AVG_train_psnr:.4f}, Validation PSNR: {AVG_valid_psnr:.4f}")
