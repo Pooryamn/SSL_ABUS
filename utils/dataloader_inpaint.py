@@ -6,10 +6,11 @@ import random
 
 # A custom class for loading volumes and masks
 class VolumeMaskDataset(torch.utils.data.Dataset):
-    def __init__(self, volume_dir, data_type, n_valid=14, xy_range=[50, 80], z_range=[7, 10]):
+    def __init__(self, volume_dir, data_type, n_valid=14, xy_range=[50, 80], z_range=[7, 10], num_range=[3,6]):
 
         self.xy_range = xy_range
         self.z_range = z_range
+        self.num_range = num_range
 
         self.file_names = [os.path.join(volume_dir, f) for f in os.listdir(volume_dir)]
         All_idx = np.arange(0, len(self.file_names))
@@ -62,11 +63,14 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         # transpose:
         mask = np.transpose(mask, (1,0,2))
 
-        x1, x2, y1, y2, z1, z2 = self.masking_coordinate_generator(mask.shape, self.xy_range, self.z_range)
-
         # here volume is a patch of data with a randon black cube within
         volume = mask.copy()
-        volume[x1:x2, y1:y2, z1:z2] = 0
+
+        number_of_masked_patches = np.random.randint(low=self.num_range[0], high=self.num_range[1])
+
+        for i in range(number_of_masked_patches):
+            x1, x2, y1, y2, z1, z2 = self.masking_coordinate_generator(mask.shape, self.xy_range, self.z_range)
+            volume[x1:x2, y1:y2, z1:z2] = 0
         
         # Convert to Tensor
         volume = torch.from_numpy(volume).float().unsqueeze(0)
