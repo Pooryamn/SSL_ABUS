@@ -196,7 +196,8 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
         # Save Best
         if (AVG_valid_psnr > Max_PSNR):
             
-            torch.save(model.state_dict(), model_name)          
+            torch.save(model.state_dict(), model_name)
+            Max_PSNR =  AVG_valid_psnr         
 
         # EPOCH LOG
         print(f"******************** Epoch: {epoch+1}/{epochs}, Train Loss: {AVG_train_loss:.4f}, Validation Loss: {AVG_valid_loss:.4f}, Train SSIM: {AVG_train_ssim:.4f}, Validation SSIM: {AVG_valid_ssim:.4f}, Train PSNR: {AVG_train_psnr:.4f}, Validation PSNR: {AVG_valid_psnr:.4f}")
