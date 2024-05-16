@@ -21,6 +21,8 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         # split data
         if (data_type == 'valid'):
             self.file_names = [self.file_names[i] for i in Valid_idx]
+            with open("validation_names.txt", "w") as output:
+                output.write(str(self.file_names))
         else:
             Train_idx = np.array([x for x in All_idx if x not in Valid_idx])
             self.file_names = [self.file_names[i] for i  in Train_idx]

@@ -12,6 +12,8 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
 
         random.seed(1377)
         self.validation_names = random.choices(self.file_names, k=n_valid)
+        with open("validation_names.txt", "w") as output:
+            output.write(str(self.validation_names))
 
         if (data_type == 'valid'):
             self.volume_paths = [os.path.join(volume_dir, f) for f in self.validation_names]
