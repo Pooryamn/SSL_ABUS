@@ -7,9 +7,8 @@ import numpy as np
 import gc
 
 import pickle
-#from torchmetrics.image import StructuralSimilarityIndexMeasure
 
-from utils.dataloader_noise import DataLoaderCreator
+from utils.dataloader_inpaint import DataLoaderCreator
 from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
@@ -18,7 +17,7 @@ from model.DATTR2_UNET import DoubleATTR2U_Net
 from utils.metrics import PSNR
 from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
-from utils.losses import DualSSIMLoss
+from utils.losses import SSIMLoss
 
 
 def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
