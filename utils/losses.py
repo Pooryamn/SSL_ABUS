@@ -101,3 +101,16 @@ class DualSSIMLoss(nn.Module):
         return Loss, SSIM_pred_target
 
         
+class SSIMLoss(nn.Module):
+    def __init__(self):
+        super(DualSSIMLoss, self).__init__()
+
+        self.ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0)
+    
+    def forward(self, predictions, targets):
+
+        # calculate SSIM between target and prediction
+        SSIM_pred_target = self.ssim(targets, predictions)
+        Loss = 1 - SSIM_pred_target
+
+        return Loss, SSIM_pred_target
