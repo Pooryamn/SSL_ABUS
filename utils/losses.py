@@ -103,7 +103,7 @@ class DualSSIMLoss(nn.Module):
         
 class SSIMLoss(nn.Module):
     def __init__(self):
-        super(DualSSIMLoss, self).__init__()
+        super(SSIMLoss, self).__init__()
 
         self.ssim = StructuralSimilarityIndexMeasure(gaussian_kernel = False, kernel_size=5,data_range=1.0)
     
