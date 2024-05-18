@@ -32,7 +32,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
 
     if model_name == "Unet":
         # Create Model 
-        model_name = UNet(in_ch=1, out_ch=1, features=feature_maps).to(device)
+        model = UNet(in_ch=1, out_ch=1, features=feature_maps).to(device)
 
     elif model_name == "Attention_Unet":
         model  = Attention_Unet(in_ch=1, out_ch=1, features=feature_maps).to(device)
