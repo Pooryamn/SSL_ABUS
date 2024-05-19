@@ -109,7 +109,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
             del volumes
 
             # metrics
-            Train_SSIM += SSIM
+            Train_SSIM += SSIM.item()
 
             # convert to numpy first
             masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
@@ -163,7 +163,7 @@ def TRAIN_Func(epochs, batch_size, model_name, volume_dir, mask_dir, feature_map
                 del volumes
 
                 # metrics
-                Val_SSIM += SSIM
+                Val_SSIM += SSIM.item()
 
                 # convert to numpy first
                 masks   = np.array(masks.squeeze(0).squeeze(0).cpu().detach().numpy())
