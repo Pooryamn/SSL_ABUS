@@ -1,6 +1,5 @@
 import torch
 from torch.utils.data import DataLoader
-from torchvision.transforms import v2
 import numpy as np
 import os
 
@@ -34,19 +33,27 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         # normalize data
         volume = (volume - volume.min()) / (volume.max() - volume.min())
 
-        volume = torch.from_numpy(volume).float()
-        mask   = torch.from_numpy(mask).float()
+       
 
         if self.augmentation == True:
             # apply augmentation
-            pass
+            P_vertical = np.random.rand() > 0.5
+            P_horizontal = np.random.rand() > 0.5
+
+            if P_vertical:
+                volume = np.flip(volume, axis=0)
+                mask = np.flip(mask, axis=0)
+            
+            if P_horizontal:
+                volume = np.flip(volume, axis=1)
+                mask = np.flip(mask, axis=1)
 
         # mask Vec
         mask_vector = self.Mask2Vec(mask)
         
         # Convert to Tensor
-        volume = volume.unsqueeze(0)
-        mask   = mask_vector.unsqueeze(0)
+        volume = torch.from_numpy(volume).float().unsqueeze(0)
+        mask   = torch.from_numpy(mask_vector).float().unsqueeze(0)
         
         return volume, mask
     
