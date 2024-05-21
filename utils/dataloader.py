@@ -1,11 +1,15 @@
 import torch
 from torch.utils.data import DataLoader
+from torchvision.transforms import v2
 import numpy as np
 import os
 
 # A custom class for loading volumes and masks
 class VolumeMaskDataset(torch.utils.data.Dataset):
-    def __init__(self, volume_dir, mask_dir):
+    def __init__(self, volume_dir, mask_dir, augmentation=False):
+
+        self.augmentation = augmentation
+
         self.volume_paths = [os.path.join(volume_dir, f) for f in os.listdir(volume_dir)]
         self.mask_paths   = [os.path.join(mask_dir, f) for f in os.listdir(mask_dir)]
         
@@ -30,12 +34,19 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         # normalize data
         volume = (volume - volume.min()) / (volume.max() - volume.min())
 
+        volume = torch.from_numpy(volume).float()
+        mask   = torch.from_numpy(mask).float()
+
+        if self.augmentation == True:
+            # apply augmentation
+            pass
+
         # mask Vec
         mask_vector = self.Mask2Vec(mask)
         
         # Convert to Tensor
-        volume = torch.from_numpy(volume).float().unsqueeze(0)
-        mask   = torch.from_numpy(mask_vector).float().unsqueeze(0)
+        volume = volume.unsqueeze(0)
+        mask   = mask_vector.unsqueeze(0)
         
         return volume, mask
     
@@ -60,9 +71,9 @@ def Test_Dataset_Class():
     
     print(dataset[10])
 
-def DataLoaderCreator(volume_dir, mask_dir, batch_size, shuffle = True):
+def DataLoaderCreator(volume_dir, mask_dir, batch_size, shuffle = True, augmentation=False):
     # Create dataset
-    dataset = VolumeMaskDataset(volume_dir, mask_dir)
+    dataset = VolumeMaskDataset(volume_dir, mask_dir, augmentation)
     
     # create dataloader
     dataloader = DataLoader(dataset, batch_size, shuffle)
