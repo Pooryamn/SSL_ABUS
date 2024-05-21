@@ -59,6 +59,9 @@ class IoULoss(nn.Module):
     
 
 class FocalLoss(nn.Module):
+    """
+    Source paper:  https://arxiv.org/abs/1708.02002
+    """
     def __init__(self, ALPHA = 0.8, GAMMA = 2, weight=None, size_average=True):
         super(FocalLoss, self).__init__()
         self.alpha = ALPHA
@@ -114,3 +117,28 @@ class SSIMLoss(nn.Module):
         Loss = 1 - SSIM_pred_target
 
         return Loss, SSIM_pred_target
+
+class TverskyLoss(nn.Module):
+    """
+    Source paper: https://arxiv.org/abs/1706.05721
+    """
+    def __init__(self, ALPHA, BETA, weight=None, size_average=True, smooth=1):
+        super(TverskyLoss, self).__init__()
+
+        self.alpha = ALPHA
+        self.beta = BETA
+        self.smooth = smooth
+
+    def forward(self, inputs, targets):
+        
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+
+        # TP, FP, FN
+        TP = (inputs * targets).sum()
+        FP = ((1 - targets) * inputs).sum()
+        FN = (targets * (1 - inputs)).sum()
+
+        Tversky = (TP + self.smooth) / (TP + (self.alpha * FP) + (self.beta * FN) + smooth)
+
+        return 1 - Tversky
