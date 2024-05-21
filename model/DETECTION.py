@@ -6,8 +6,10 @@ class Detection_model(nn.Module):
     """
     detection model
     """
-    def __init__(self, in_ch, out_ch, features = [4,8]):
+    def __init__(self, in_ch, out_ch, features = [4,8], threshold=0.5):
         super(Detection_model, self).__init__()
+
+        self.Threshold = threshold
         
         self.Maxpool1 = nn.MaxPool3d((4,4,1), stride=(4,4,1))
         self.Maxpool2 = nn.MaxPool3d((2,2,1), stride=(2,2,1))
@@ -60,7 +62,7 @@ class Detection_model(nn.Module):
 
         x = self.Activation(x)
 
-        x = (x > 0.5) * 1.0
+        x = (x > self.Threshold) * 1.0
 
         kernel = torch.tensor([1, 1, 1], dtype=torch.float32).unsqueeze(0).unsqueeze(0)
         
