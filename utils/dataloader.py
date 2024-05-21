@@ -29,12 +29,27 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         
         # normalize data
         volume = (volume - volume.min()) / (volume.max() - volume.min())
+
+        # mask Vec
+        mask_vector = self.Mask2Vec(mask)
         
         # Convert to Tensor
         volume = torch.from_numpy(volume).float().unsqueeze(0)
-        mask   = torch.from_numpy(mask).float().unsqueeze(0)
+        mask   = torch.from_numpy(mask_vector).float().unsqueeze(0)
         
         return volume, mask
+    
+    def Mask2Vec(self, mask):
+        
+        mask_vector = np.zeros((32))
+        
+        if (mask.max() > 0):
+            for i in range(mask.shape[2]):
+                if (mask[:,:,i].sum() >= 900):
+                    mask_vector[i] = 1.0
+
+        return mask_vector
+
 
 def Test_Dataset_Class():
     volume_dir = '/kaggle/input/tdscabus-train-patches/TDSC_Patches/Volumes'
