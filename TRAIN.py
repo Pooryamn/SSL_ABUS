@@ -28,8 +28,8 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
     print(device)
 
 
-    train_dataloader = DataLoaderCreator(train_volume_dir, train_mask_dir, batch_size, augmentation=True)
-    test_dataloader  = DataLoaderCreator(test_volume_dir, test_mask_dir, batch_size, augmentation=False)
+    train_dataloader = DataLoaderCreator(train_volume_dir, train_mask_dir, batch_size)
+    test_dataloader  = DataLoaderCreator(test_volume_dir, test_mask_dir, batch_size)
 
     if model_name == "Unet":
         # Create Model 
