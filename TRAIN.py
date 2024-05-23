@@ -19,7 +19,7 @@ from utils.losses import FocalLoss
 
 
 
-def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, Detection_feature_maps=[16,32,64],Train_type='full' , learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
+def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, Detection_feature_maps=[16,32,64],Train_type='full' , learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -72,6 +72,7 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
     
     # Add two models toghether
     D_model = Detection_model(in_ch=1, out_ch=1, features=Detection_feature_maps, threshold=0.5).to(device)
+    WEIGHT_INITIALIZATION(D_model, 'xavier')
 
     Combined_model = nn.Sequential(model, D_model).to(device)
 
