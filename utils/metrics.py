@@ -44,7 +44,7 @@ def PSNR(data, noisy_data):
 
     return psnr 
 
-def Sensitivity(inputs, targets, smooth=1.0):
+def Sensitivity(inputs, targets):
 
         inputs = inputs.view(-1)
         targets = targets.view(-1)
@@ -54,6 +54,9 @@ def Sensitivity(inputs, targets, smooth=1.0):
         FP = ((1 - targets) * inputs).sum()
         FN = (targets * (1 - inputs)).sum()
 
-        sensitivity = (TP + smooth) / (TP + FN + smooth)
+        if (TP == 0 and FN == 0):
+            return torch.tensor([0.01]), FP
+
+        sensitivity = (TP) / (TP + FN)
 
         return sensitivity, FP
