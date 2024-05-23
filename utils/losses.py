@@ -140,7 +140,7 @@ class TverskyLoss(nn.Module):
         FP = ((1 - targets) * inputs).sum()
         FN = (targets * (1 - inputs)).sum()
 
-        Tversky = (TP + self.smooth) / (TP + (self.alpha * FP) + (self.beta * FN) + smooth)
+        Tversky = (TP + self.smooth) / (TP + (self.alpha * FP) + (self.beta * FN) + self.smooth)
         Tversky.requires_grad = True
 
         return 1 - Tversky
