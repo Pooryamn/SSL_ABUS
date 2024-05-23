@@ -7,8 +7,6 @@ import os
 class VolumeMaskDataset(torch.utils.data.Dataset):
     def __init__(self, volume_dir, mask_dir):
 
-        self.augmentation = augmentation
-
         self.volume_dir = volume_dir
         self.mask_dir = mask_dir
 
