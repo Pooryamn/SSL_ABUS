@@ -105,6 +105,7 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
             loss = criterion(outputs, masks)
             Train_LOSS += loss.item()
 
+            # Metrics
             Sen, fp = Sensitivity(outputs, masks)
             Train_SENSITIVITY += Sen.item()
             Train_FP += fp.item()
@@ -134,8 +135,10 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
     
         with torch.no_grad():
         
-            val_loss = 0
-            val_dice = 0
+            Val_LOSS = 0
+            Val_SENSITIVITY = 0
+            Val_FP = 0
+            Max_SENSITIVITY = 0
         
             for j, (volumes, masks) in enumerate(test_dataloader):
             
@@ -150,36 +153,43 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
             
                 # Calculate Loss
                 loss = criterion(outputs, masks)
-                val_loss += loss.item()
+                Val_LOSS += loss.item()
             
-            
-                # Calculate Dice
-                dice = dice_score(outputs, masks)
-                val_dice += dice
+                # Metrics
+                Sen, fp = Sensitivity(outputs, masks)
+                Val_SENSITIVITY += Sen.item()
+                Val_FP += fp.item()
             
                 # Memory related function
                 del masks
                 gc.collect()
                 torch.cuda.empty_cache()
         
-            # Average loss and dice
-            avg_val_loss = val_loss / len(test_dataloader)
-            avg_val_dice = val_dice / len(test_dataloader)
+            # calculate averages
+            AVG_valid_loss = Val_LOSS / len(test_dataloader)
+            AVG_valid_sensitivity = Val_SENSITIVITY / len(test_dataloader)
+            AVG_valid_FP = Val_FP / len(test_dataloader)
         
+        # save epoch information
+        plot_data['train_loss'].append(AVG_train_loss)
+        plot_data['train_sensitivity'].append(AVG_train_sensitivity)
+        plot_data['train_FP'].append(AVG_train_FP)
+        plot_data['valid_loss'].append(AVG_valid_loss)
+        plot_data['valid_sensitivity'].append(AVG_valid_sensitivity)
+        plot_data['valid_FP'].append(AVG_valid_FP)
+        
+        with open('Model_history.pkl', 'wb') as f:
+            pickle.dump(plot_data, f)
+
+        # Save Best
+        if (AVG_valid_sensitivity > Max_SENSITIVITY):
+            torch.save(model.state_dict(), model_name)
+            Max_SENSITIVITY =  AVG_valid_sensitivity    
+
         # EPOCH LOG
-        print(f"********** Epoch: {epoch+1}/{epochs},Train Loss: {avg_train_loss:.4f}, Validation Loss:{avg_val_loss:.4f}, Validation Dice: {avg_val_dice:.4f}")
+        print(f"******************** Epoch: {epoch+1}/{epochs}, Train Loss: {AVG_train_loss:.4f}, Validation Loss: {AVG_valid_loss:.4f}, Train Sensitivity: {AVG_train_sensitivity:.4f}, Validation Sensitivity: {AVG_valid_sensitivity:.4f}, Train FP: {AVG_train_FP:.4f}, Validation FP: {AVG_valid_FP:.4f}")
 
-    torch.save(model.state_dict(), 'model.pth')
-
-
-
-TRAIN_Func(
-    epochs = 1,
-    batch_size = 1,
-    model = 'Attention_Unet',
-    train_volume_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Volumes',
-    train_mask_dir = '/teamspace/studios/this_studio/TrainSet/TDSC_Patches/Mask',
-    test_volume_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Volumes',
-    test_mask_dir = '/teamspace/studios/this_studio/TestSet/TDSC_Patches/Mask',
-    feature_maps = [16,32,64,128,256]
-    )
+        # check for early stopping
+        if (early_stopper.early_stop(AVG_valid_loss)):
+            print(f'########## Eearly stop in epoch {epoch+1}')
+            break 
