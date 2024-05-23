@@ -44,34 +44,16 @@ def PSNR(data, noisy_data):
 
     return psnr 
 
-def Sensitivity(inputs, targets):
-        # Debug
-        print('===== DEBUG =====')
-        print(f'inputs shape 1: {inputs.size()}')
-        print(f'targets shape 1: {targets.size()}')
-
-        print(f'inputs: {inputs}')
-        print(f'targets: {targets}')
+def Sensitivity(inputs, targets, smooth=1.0):
 
         inputs = inputs.view(-1)
         targets = targets.view(-1)
-
-
-        print(f'inputs shape 2: {inputs.size()}')
-        print(f'targets shape 2: {targets.size()}')
 
         # TP, FP, FN
         TP = (inputs * targets).sum()
         FP = ((1 - targets) * inputs).sum()
         FN = (targets * (1 - inputs)).sum()
 
-        print(f'TP: {TP}')
-        print(f'FP: {FP}')
-        print(f'FN: {FN}')
-
-        sensitivity = TP / (TP + FN)
-
-        print(f'sensitivity{sensitivity}')
-        exit()
+        sensitivity = (TP + smooth) / (TP + FN + smooth)
 
         return sensitivity, FP
