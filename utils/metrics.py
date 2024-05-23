@@ -44,19 +44,20 @@ def PSNR(data, noisy_data):
 
     return psnr 
 
-def Sensitivity(inputs, targets):
+def Classification_results(inputs, targets):
 
         inputs = inputs.view(-1)
         targets = targets.view(-1)
 
         # TP, FP, FN
         TP = (inputs * targets).sum()
+        TN = ((1 - targets) * (1 - inputs)).sum()
         FP = ((1 - targets) * inputs).sum()
         FN = (targets * (1 - inputs)).sum()
 
-        if (TP == 0 and FN == 0):
-            return torch.tensor([0.01]), FP
+        Precision = TP / (TP + FP)
+        Recall = TP / (TP + FN)
+        Accuracy = (TP + TN) / (TP + TN + FP + FN)
+        F1 = (2 * Precision * Recall) / (Precision + Recall)
 
-        sensitivity = (TP) / (TP + FN)
-
-        return sensitivity, FP
+        return Precision, Recall, F1, Accuracy, FP
