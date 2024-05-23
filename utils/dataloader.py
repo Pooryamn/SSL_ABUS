@@ -9,22 +9,25 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
 
         self.augmentation = augmentation
 
-        self.volume_paths = [os.path.join(volume_dir, f) for f in os.listdir(volume_dir)]
-        self.mask_paths   = [os.path.join(mask_dir, f) for f in os.listdir(mask_dir)]
+        self.volume_dir = volume_dir
+        self.mask_dir = mask_dir
+
+        self.file_names = os.listdir(self.volume_dir)
+        TMP = os.listdir(self.mask_dir)
         
-        # Sort paths
-        self.volume_paths.sort()
-        self.mask_paths.sort()
-        
-        assert len(self.volume_paths) == len(self.mask_paths), "Unequal number of volumes and masks"
+        assert len(self.file_names) == len(TMP), "Unequal number of volumes and masks"
+        del TMP
+
+        # Log
+        print(f'Number of files: {len(self.file_names)}')
     
     def __len__(self):
         return len(self.volume_paths)
     
     def __getitem__(self, idx):
-        volume_path = self.volume_paths[idx]
-        mask_path   = self.mask_paths[idx]
-        
+
+        volume_path = os.path.join(self.volume_dir, self.file_names[idx])
+        mask_path   = os.path.join(self.mask_dir, self.file_names[idx])
         
         # Load Volume and mask
         volume = np.load(volume_path)
@@ -32,8 +35,6 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         
         # normalize data
         volume = (volume - volume.min()) / (volume.max() - volume.min())
-
-       
 
         if self.augmentation == True:
             # apply augmentation
