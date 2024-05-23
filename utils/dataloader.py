@@ -22,7 +22,7 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         print(f'Number of files: {len(self.file_names)}')
     
     def __len__(self):
-        return len(self.volume_paths)
+        return len(self.file_names)
     
     def __getitem__(self, idx):
 
