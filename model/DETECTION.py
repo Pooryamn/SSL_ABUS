@@ -25,7 +25,7 @@ class Detection_model(nn.Module):
         self.Conv3 = nn.Conv3d(features[1], features[2], kernel_size=(5,5,1), padding=(0,0,0))
         self.Conv4 = nn.Conv3d(features[2], features[1], kernel_size=(3,3,1), padding=(0,0,0))
         self.Conv5 = nn.Conv3d(features[1], features[0], kernel_size=(3,3,1), padding=(0,0,0))
-        self.Conv6 = nn.Conv3d(features[0], 1, kernel_size=(1,1,1), padding=(0,0,0))
+        self.Conv6 = nn.Conv3d(features[0], 1, kernel_size=(7,7,1), padding=(0,0,0))
 
         self.BN1 = nn.BatchNorm3d(features[0])
         self.BN2 = nn.BatchNorm3d(features[1])
@@ -36,7 +36,7 @@ class Detection_model(nn.Module):
         self.Relu = nn.ReLU(inplace=True)
 
         self.Flatt = nn.Flatten()
-        self.FC = nn.Linear(1568, 32)
+        #self.FC = nn.Linear(1568, 32)
         self.Activation = nn.Sigmoid()
         
     def forward(self, x):
@@ -72,7 +72,7 @@ class Detection_model(nn.Module):
         
         x = self.Flatt(x)
 
-        x = self.FC(x)
+        #x = self.FC(x)
 
         x = self.Activation(x)
 
