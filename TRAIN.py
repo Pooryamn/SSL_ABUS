@@ -11,6 +11,7 @@ from model.ATT_UNET import Attention_Unet
 from model.R2UNET import R2U_Net
 from model.ATTR2_UNET import ATTR2U_Net
 from model.DATTR2_UNET import DoubleATTR2U_Net
+from model.DETECTION import Detection_model
 from utils.metrics import Sensitivity
 from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
@@ -18,7 +19,7 @@ from utils.losses import FocalLoss
 
 
 
-def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
+def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, Detection_feature_maps=[16,32,64],Train_type='full' , learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -52,7 +53,27 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
     elif (weight_init != None):
         WEIGHT_INITIALIZATION(model, weight_init)
 
+    params = list(model.parameters())
+    if (Train_type == 'Detection'):
+        for param in params:
+            param.requires_grad = False
+
+    elif (Train_type == 'Partial'):
+        num_of_freeze_params = len(params) // 2
+        for param in params[:num_of_freeze_params]:
+            param.requires_grad = False
+    
+    elif (Train_type == 'full'):
+        pass
+    
+    else:
+        raise('Invalid train type!')
+
+    
     # Add two models toghether
+    D_model = Detection_model(in_ch=1, out_ch=1, features=Detection_feature_maps, threshold=0.5)
+
+    Combined_model = nn.Sequential(model, D_model)
 
     # Optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -84,7 +105,7 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
     for epoch in range(epochs):
     
         # Train model
-        model.train()
+        Combined_model.train()
     
         Train_LOSS = 0
         Train_SENSITIVITY = 0
@@ -96,7 +117,7 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
             masks = masks.to(device)
         
             # Forward Pass
-            outputs = model(volumes)
+            outputs = Combined_model(volumes)
         
             # Memory related function
             del volumes
@@ -131,7 +152,7 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
         AVG_train_FP = Train_FP / len(train_dataloader)
     
         # Evaluation 
-        model.eval()
+        Combined_model.eval()
     
         with torch.no_grad():
         
@@ -146,7 +167,7 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
                 masks   = masks.to(device)
             
                 # Forward pass
-                outputs = model(volumes)
+                outputs = Combined_model(volumes)
             
                 # Memory related function
                 del volumes
