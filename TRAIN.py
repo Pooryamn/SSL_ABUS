@@ -18,36 +18,67 @@ from utils.losses import FocalLoss
 
 
 
-def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps):
+def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
-    # Parameters
-    learning_rate = 0.001
 
-    train_dataloader = DataLoaderCreator(train_volume_dir, train_mask_dir, batch_size)
-    test_dataloader  = DataLoaderCreator(test_volume_dir, test_mask_dir, batch_size)
+    train_dataloader = DataLoaderCreator(train_volume_dir, train_mask_dir, batch_size, augmentation=True)
+    test_dataloader  = DataLoaderCreator(test_volume_dir, test_mask_dir, batch_size, augmentation=False)
 
-    if model == "Unet":
+    if model_name == "Unet":
         # Create Model 
         model = UNet(in_ch=1, out_ch=1, features=feature_maps).to(device)
 
-    elif model == "Attention_Unet":
+    elif model_name == "Attention_Unet":
         model  = Attention_Unet(in_ch=1, out_ch=1, features=feature_maps).to(device)
     
-    elif model == "R2Unet":
+    elif model_name == "R2Unet":
         model = R2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
+
+    elif model_name == "AttR2Unet":
+        model = ATTR2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
+
+    elif model_name == 'DAttR2Unet':
+        model = DoubleATTR2U_Net(in_ch=1, out_ch=1, features=feature_maps, t=2).to(device)
 
     else:
         raise('Error in selecing the model')
+
+    if (weight_path != None):
+        model.load_state_dict(torch.load(weight_path, map_location=torch.device(device)))
+    elif (weight_init != None):
+        WEIGHT_INITIALIZATION(model, weight_init)
+
+    # Add two models toghether
 
     # Optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
-    criterion = nn.BCELoss() # Binary Segmentation
+    criterion = FocalLoss() # Binary classification
+
+    # early stop
+    early_stopper = EarlyStopper(patience=4, min_delta=0.3)
+
+    # create a suitable name for saving the weights
+    model_name = model_name + '.pth'
+
+    # plot data
+    if (log_path == None):
+        plot_data = {
+            'train_loss': [],
+            'train_sensitivity': [],
+            'train_FP': [],
+            'valid_loss': [],
+            'valid_sensitivity': [],
+            'valid_FP': []
+        }
+    else:
+        with open(log_path, 'rb') as f:
+            plot_data = pickle.load(f)
 
     # Trainin Loop
     for epoch in range(epochs):
@@ -55,7 +86,9 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
         # Train model
         model.train()
     
-        train_loss = 0
+        Train_LOSS = 0
+        Train_SENSITIVITY = 0
+        Train_FP = 0
     
         for i, (volumes, masks) in enumerate(train_dataloader):
         
@@ -70,13 +103,11 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
         
             # Calculate Loss
             loss = criterion(outputs, masks)
-            train_loss += loss.item()
+            Train_LOSS += loss.item()
 
-            # Log
-            if (i % 50 == 0) :
-                dice = dice_score(outputs, masks)
-                print(f"Epoch: {epoch}/{epochs}, batch: {i}/{len(train_dataloader)}, Loss: {loss.item():.4f}, Dice: {dice.item():.5f}")
-        
+            Sen, fp = Sensitivity(outputs, masks)
+            Train_SENSITIVITY += Sen.item()
+            Train_FP += fp.item()
 
             # Backward Pass
             optimizer.zero_grad()
@@ -87,10 +118,16 @@ def TRAIN_Func(epochs, batch_size, model, train_volume_dir, train_mask_dir, test
             del masks
             gc.collect()
             torch.cuda.empty_cache()
+
+            if (i % 30 == 0 and i!=0):
+                print(f'*** Batch {i} / {len(train_dataloader)}, Train Loss: {(Train_LOSS / i):.4f}, Train Sensitivity: {(Train_SENSITIVITY / i):.4f}, Train FP: {(Train_FP / i):.4f} ***')
+      
         
             
-        # calculate average loss
-        avg_train_loss = train_loss / len(train_dataloader)
+        # calculate averages
+        AVG_train_loss = Train_LOSS / len(train_dataloader)
+        AVG_train_sensitivity = Train_SENSITIVITY / len(train_dataloader)
+        AVG_train_FP = Train_FP / len(train_dataloader)
     
         # Evaluation 
         model.eval()
