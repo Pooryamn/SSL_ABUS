@@ -43,3 +43,17 @@ def PSNR(data, noisy_data):
     psnr = 20 * np.log10(max_pixel / (np.sqrt(MSE)))
 
     return psnr 
+
+def Sensitivity(inputs, targets):
+        
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+
+        # TP, FP, FN
+        TP = (inputs * targets).sum()
+        FP = ((1 - targets) * inputs).sum()
+        FN = (targets * (1 - inputs)).sum()
+
+        sensitivity = TP / (TP + FN)
+
+        return sensitivity, FP
