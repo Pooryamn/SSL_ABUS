@@ -17,7 +17,7 @@ from model.DETECTION import Detection_model
 from utils.metrics import Classification_results
 from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
-from utils.losses import TverskyLoss
+from utils.losses import FocalLoss
 
 
 
@@ -82,7 +82,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
-    criterion = nn.BCELoss().to(device) # Binary classification
+    criterion = FocalLoss().to(device) # Binary classification
 
     # early stop
     early_stopper = EarlyStopper(patience=4, min_delta=0.3)
@@ -127,7 +127,6 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
         
             volumes = volumes.to(device)
             masks = masks.to(device)
-            masks = masks.squeeze(0)
         
             # Forward Pass
             outputs = Combined_model(volumes)
@@ -138,7 +137,6 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
             # Calculate Loss
             loss = criterion(outputs, masks)
             Train_LOSS += loss.item()
-            loss.requires_grad = True
 
             # Metrics
             PRC, REC, F1, ACC, FP = Classification_results(outputs, masks)
@@ -188,7 +186,6 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
             
                 volumes = volumes.to(device)
                 masks   = masks.to(device)
-                masks = masks.squeeze(0)
             
                 # Forward pass
                 outputs = Combined_model(volumes)
