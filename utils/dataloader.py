@@ -5,7 +5,7 @@ import os
 
 # A custom class for loading volumes and masks
 class VolumeMaskDataset(torch.utils.data.Dataset):
-    def __init__(self, volume_dir, mask_dir, augmentation=False):
+    def __init__(self, volume_dir, mask_dir):
 
         self.augmentation = augmentation
 
@@ -35,42 +35,12 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         
         # normalize data
         volume = (volume - volume.min()) / (volume.max() - volume.min())
-
-        if self.augmentation == True:
-            # apply augmentation
-            P_vertical = np.random.rand() > 0.5
-            P_horizontal = np.random.rand() > 0.5
-
-            if P_vertical:
-                volume = np.flip(volume, axis=0)
-                mask = np.flip(mask, axis=0)
-            
-            if P_horizontal:
-                volume = np.flip(volume, axis=1)
-                mask = np.flip(mask, axis=1)
-
-        # mask Vec
-        mask_vector = self.Mask2Vec(mask)
         
         # Convert to Tensor
-        volume2 = volume.copy()
-        volume = torch.from_numpy(volume2).float().unsqueeze(0)
+        volume = torch.from_numpy(volume).float().unsqueeze(0)
         mask   = torch.from_numpy(mask_vector).float().unsqueeze(0)
-
-        del volume2
         
         return volume, mask
-    
-    def Mask2Vec(self, mask):
-        
-        mask_vector = np.zeros((32))
-        
-        if (mask.max() > 0):
-            for i in range(mask.shape[2]):
-                if (mask[:,:,i].sum() >= 900):
-                    mask_vector[i] = 1.0
-
-        return mask_vector
 
 
 def Test_Dataset_Class():
@@ -82,7 +52,7 @@ def Test_Dataset_Class():
     
     print(dataset[10])
 
-def DataLoaderCreator(volume_dir, mask_dir, batch_size, shuffle = True, augmentation=False):
+def DataLoaderCreator(volume_dir, mask_dir, batch_size, shuffle = True):
     # Create dataset
     dataset = VolumeMaskDataset(volume_dir, mask_dir, augmentation)
     
