@@ -138,6 +138,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
             # Calculate Loss
             loss = criterion(outputs, masks)
             Train_LOSS += loss.item()
+            loss.requires_grad = True
 
             # Metrics
             PRC, REC, F1, ACC, FP = Classification_results(outputs, masks)
