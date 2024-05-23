@@ -11,6 +11,7 @@ class Detection_model(nn.Module):
         super(Detection_model, self).__init__()
 
         self.Threshold = threshold
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.SA = SpatialAttention(kernel_size=5)
         
@@ -77,7 +78,7 @@ class Detection_model(nn.Module):
 
         x = (x > self.Threshold) * 1.0
 
-        kernel = torch.tensor([1, 1, 1], dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+        kernel = torch.tensor([1, 1, 1], dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(self.device)
         
         # (Opening -> Closing)
         erosion = (F.conv1d(x.long(), kernel.long(), padding=1) == 3) * 1.0
