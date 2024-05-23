@@ -127,6 +127,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
         
             volumes = volumes.to(device)
             masks = masks.to(device)
+            masks = masks.unsqueeze(0)
         
             # Forward Pass
             outputs = Combined_model(volumes)
@@ -186,6 +187,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
             
                 volumes = volumes.to(device)
                 masks   = masks.to(device)
+                masks = masks.unsqueeze(0)
             
                 # Forward pass
                 outputs = Combined_model(volumes)
