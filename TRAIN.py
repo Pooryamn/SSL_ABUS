@@ -5,6 +5,8 @@ import torch.nn as nn
 # Memory management
 import gc
 
+import pickle
+
 from utils.dataloader import DataLoaderCreator
 from model.UNET import UNet
 from model.ATT_UNET import Attention_Unet
