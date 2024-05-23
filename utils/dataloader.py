@@ -53,8 +53,11 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         mask_vector = self.Mask2Vec(mask)
         
         # Convert to Tensor
+        volume2 = volume.copy()
         volume = torch.from_numpy(volume).float().unsqueeze(0)
         mask   = torch.from_numpy(mask_vector).float().unsqueeze(0)
+
+        del volume2
         
         return volume, mask
     
