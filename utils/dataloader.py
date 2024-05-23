@@ -54,7 +54,7 @@ def Test_Dataset_Class():
 
 def DataLoaderCreator(volume_dir, mask_dir, batch_size, shuffle = True):
     # Create dataset
-    dataset = VolumeMaskDataset(volume_dir, mask_dir, augmentation)
+    dataset = VolumeMaskDataset(volume_dir, mask_dir)
     
     # create dataloader
     dataloader = DataLoader(dataset, batch_size, shuffle)
