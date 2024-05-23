@@ -81,9 +81,9 @@ class Detection_model(nn.Module):
         kernel = torch.tensor([1, 1, 1], dtype=torch.float32).unsqueeze(0).unsqueeze(0).to(self.device)
         
         # (Opening -> Closing)
-        erosion = (F.conv1d(x.long(), kernel.long(), padding=1) == 3) * 1.0
-        opening = (F.conv1d(erosion.long(), kernel.long(), padding=1) > 0) * 1.0
-        dilation = (F.conv1d(opening.long(), kernel.long(), padding=1) > 0) * 1.0
-        output = (F.conv1d(dilation.long(), kernel.long(), padding=1) == 3) * 1.0
+        erosion = (F.conv1d(x, kernel, padding=1) == 3) * 1.0
+        opening = (F.conv1d(erosion, kernel, padding=1) > 0) * 1.0
+        dilation = (F.conv1d(opening, kernel, padding=1) > 0) * 1.0
+        output = (F.conv1d(dilation, kernel, padding=1) == 3) * 1.0
 
         return output
