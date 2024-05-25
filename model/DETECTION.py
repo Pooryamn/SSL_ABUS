@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from model.Attention_modules import SpatialAttention
-import torch.nn.functional as F
 
 class Detection_model(nn.Module):
     """
@@ -11,7 +10,6 @@ class Detection_model(nn.Module):
         super(Detection_model, self).__init__()
 
         self.Threshold = threshold
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.SA = SpatialAttention(kernel_size=5)
         
