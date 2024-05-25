@@ -214,12 +214,12 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
                 torch.cuda.empty_cache()
         
             # calculate averages
-            AVG_valid_loss = Train_LOSS / len(test_dataloader)
-            AVG_valid_precision = Train_PRECISION / len(test_dataloader)
-            AVG_valid_recall = Train_RECALL / len(test_dataloader)
-            AVG_valid_f1 = Train_F1 / len(test_dataloader)
-            AVG_valid_accuracy = Train_ACCURACY / len(test_dataloader)
-            AVG_valid_fp = Train_FP / len(test_dataloader)
+            AVG_valid_loss = Val_LOSS / len(test_dataloader)
+            AVG_valid_precision = Val_PRECISION / len(test_dataloader)
+            AVG_valid_recall = Val_RECALL / len(test_dataloader)
+            AVG_valid_f1 = Val_F1 / len(test_dataloader)
+            AVG_valid_accuracy = Val_ACCURACY / len(test_dataloader)
+            AVG_valid_fp = Val_FP / len(test_dataloader)
         
         # save epoch information
         plot_data['train_loss'].append(AVG_train_loss)
