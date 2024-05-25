@@ -44,7 +44,7 @@ def PSNR(data, noisy_data):
 
     return psnr 
 
-def Classification_results(inputs, targets):
+def Classification_results(inputs, targets, smooth=0.001):
 
         inputs = inputs.view(-1)
         targets = targets.view(-1)
@@ -55,9 +55,9 @@ def Classification_results(inputs, targets):
         FP = ((1 - targets) * inputs).sum()
         FN = (targets * (1 - inputs)).sum()
 
-        Precision = TP / (TP + FP)
-        Recall = TP / (TP + FN)
+        Precision = TP / (TP + FP + smooth)
+        Recall = TP / (TP + FN + smooth)
         Accuracy = (TP + TN) / (TP + TN + FP + FN)
-        F1 = (2 * Precision * Recall) / (Precision + Recall)
+        F1 = (2 * Precision * Recall) / (Precision + Recall + smooth)
 
         return Precision, Recall, F1, Accuracy, FP
