@@ -240,9 +240,9 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
             pickle.dump(plot_data, f)
 
         # Save Best
-        if (AVG_valid_sensitivity > Max_PRECISION):
+        if (AVG_valid_precision > Max_PRECISION):
             torch.save(model.state_dict(), model_name)
-            Max_PRECISION =  AVG_valid_sensitivity    
+            Max_PRECISION =  AVG_valid_precision    
 
         # EPOCH LOG
         print(f"******************** Epoch: {epoch+1}/{epochs}, Train Loss: {AVG_train_loss:.4f}, Validation Loss: {AVG_valid_loss:.4f}, Train Precision: {AVG_train_precision:.4f}, Validation Precision: {AVG_valid_precision:.4f}, Train Recall: {AVG_train_recall:.4f}, Validation Recall: {AVG_valid_recall:.4f}")
