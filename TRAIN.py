@@ -17,6 +17,7 @@ from model.DETECTION import Detection_model
 from utils.metrics import Classification_results
 from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
+from utils.postprocessing import post_process
 from utils.losses import FocalLoss
 
 
@@ -130,6 +131,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
         
             # Forward Pass
             outputs = Combined_model(volumes)
+            outputs = post_process(outputs)
         
             # Memory related function
             del volumes
