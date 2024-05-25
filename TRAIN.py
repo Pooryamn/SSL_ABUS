@@ -80,7 +80,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
     Combined_model = nn.Sequential(model, D_model).to(device)
 
     # Optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = torch.optim.Adam(Combined_model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
     criterion = FocalLoss().to(device) # Binary classification
