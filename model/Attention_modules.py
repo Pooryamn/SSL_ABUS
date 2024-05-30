@@ -100,3 +100,36 @@ class Attention_block(nn.Module):
         out = x * psi
 
         return out
+
+
+class GCN(nn.Module):
+    def __init__(self, in_ch):
+        super(GCN, self).__init__()
+
+        self.conv_11 = nn.Conv3d(in_ch, 64, kernel_size=(7,7,1), padding=(3,3,0))
+        self.conv_12 = nn.Conv3d(64, 64, kernel_size=(1,1,7), padding=(0,0,3))
+        
+        self.conv21 = nn.Conv3d(in_ch, 64, kernel_size=(1,1,7), padding=(0,0,3))
+        self.conv22 = nn.Conv3d(64, 64, kernel_size=(7,7,1), padding=(3,3,0))
+
+    def forward(x):
+        out1 = self.conv_11(x)
+        out1 = self.conv_12(out1)
+
+        out2 = self.conv21(x)
+        out2 = self.conv22(x)
+
+        return out1 + out2
+
+class Attention_block_v2(nn.Module):
+    def __init__(self, in_ch):
+        super(Attention_block_v2, self).__init__()
+
+        self.Maxpool1 = nn.MaxPool3d(2, stride=2)
+        self.convg = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
+        self.convx = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
+        
+        self.prelux = nn.PReLU()
+        self.prelug = nn.PReLU()
+        
+        self.gcn = GCN(128)
