@@ -154,7 +154,7 @@ class Attention_block_v2(nn.Module):
         self.gcn = GCN(128)
         self.br = BR(64)
 
-    def forward(g, x):
+    def forward(self, g, x):
         g = self.convg(g)
         g = self.prelug(g)
 
@@ -164,5 +164,53 @@ class Attention_block_v2(nn.Module):
         out = self.gcn(g + x)
 
         out = self.br(out)
+
+        return out
+
+class depthwise_separable_conv(nn.Module):
+    def __init__(self, nin, nout, kernel_size = 3, padding = 1, bias=False):
+        super(depthwise_separable_conv, self).__init__()
+        self.depthwise = nn.Conv3d(nin, nin, kernel_size=kernel_size, padding=padding, groups=nin, bias=bias)
+        self.pointwise = nn.Conv3d(nin, nout, kernel_size=1, bias=bias)
+
+    def forward(self, x):
+        out = self.depthwise(x)
+        out = self.pointwise(out)
+        return out
+
+class Attention_block_v21(nn.Module):
+    def __init__(self, in_ch):
+        super(Attention_block_v21, self).__init__()
+
+        self.convg = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
+        self.convx = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
+
+        self.prelux = nn.PReLU()
+        self.prelug = nn.PReLU()
+
+        self.dwsc1 = depthwise_separable_conv(128, 128)
+        self.prelu1= nn.PReLU()
+
+        self.dwsc2 = depthwise_separable_conv(128, 128)
+        self.prelu2= nn.PReLU()
+
+        self.conv = nn.Conv3d(128, 128, kernel_size=1,  stride=1, padding=0)
+        self.sigmoid = nn.sigmoid()
+
+    def forward(self, g, x):
+        
+        x1 = self.convx(x)
+        x1 = self.prelux(x1)
+
+        g = self.convg(g)
+        g = self.prelug(g)
+
+        out = self.dwsc1(x1 + g)
+        out = self.prelu1(out)
+
+        out = self.dwsc2(out)
+        out = self.prelu2(out)
+
+        out = x * out
 
         return out
