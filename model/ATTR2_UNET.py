@@ -3,7 +3,7 @@ import torch.nn as nn
 
 from model.R2UNET import RRCNN_Block
 from model.R2UNET import Up
-from model.ATT_UNET import Attention_block
+from model.Attention_modules import Attention_block
 
 class ATTR2U_Net(nn.Module):
     """
