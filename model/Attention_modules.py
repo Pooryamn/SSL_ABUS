@@ -121,6 +121,26 @@ class GCN(nn.Module):
 
         return out1 + out2
 
+class BR(nn.Module):
+    def __init__(self, in_ch):
+        super(BR, self).__init__()
+        
+        self.conv1 = nn.Conv3d(in_ch, in_ch, kernel_size=3, padding=1, stride=1)
+        
+        self.prelu = nn.PReLU()
+
+        self.conv2 = nn.Conv3d(in_ch, 64, kernel_size=3, padding=1, stride=1)
+    
+    def forward(x):
+        x1 = self.conv1(x)
+        x1 = self.prelu(x1)
+        x1 = self.conv2(x1)
+
+        return x + x1
+
+
+
+
 class Attention_block_v2(nn.Module):
     def __init__(self, in_ch):
         super(Attention_block_v2, self).__init__()
