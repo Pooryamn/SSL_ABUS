@@ -106,11 +106,11 @@ class GCN(nn.Module):
     def __init__(self, in_ch):
         super(GCN, self).__init__()
 
-        self.conv_11 = nn.Conv3d(in_ch, 64, kernel_size=(7,7,1), padding=(3,3,0))
-        self.conv_12 = nn.Conv3d(64, 64, kernel_size=(1,1,7), padding=(0,0,3))
+        self.conv_11 = nn.Conv3d(in_ch, 32, kernel_size=(7,7,1), padding=(3,3,0))
+        self.conv_12 = nn.Conv3d(32, 32, kernel_size=(1,1,7), padding=(0,0,3))
         
-        self.conv21 = nn.Conv3d(in_ch, 64, kernel_size=(1,1,7), padding=(0,0,3))
-        self.conv22 = nn.Conv3d(64, 64, kernel_size=(7,7,1), padding=(3,3,0))
+        self.conv21 = nn.Conv3d(in_ch, 32, kernel_size=(1,1,7), padding=(0,0,3))
+        self.conv22 = nn.Conv3d(32, 32, kernel_size=(7,7,1), padding=(3,3,0))
 
     def forward(self,x):
         out1 = self.conv_11(x)
@@ -129,7 +129,7 @@ class BR(nn.Module):
         
         self.prelu = nn.PReLU()
 
-        self.conv2 = nn.Conv3d(in_ch, 64, kernel_size=3, padding=1, stride=1)
+        self.conv2 = nn.Conv3d(in_ch, 32, kernel_size=3, padding=1, stride=1)
     
     def forward(self,x):
         x1 = self.conv1(x)
@@ -138,21 +138,18 @@ class BR(nn.Module):
 
         return x + x1
 
-
-
-
 class Attention_block_v2(nn.Module):
     def __init__(self, in_ch):
         super(Attention_block_v2, self).__init__()
 
-        self.convg = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
-        self.convx = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
+        self.convg = nn.Conv3d(in_ch, 32, kernel_size=1, stride=1, padding=0)
+        self.convx = nn.Conv3d(in_ch, 32, kernel_size=1, stride=1, padding=0)
         
         self.prelux = nn.PReLU()
         self.prelug = nn.PReLU()
         
-        self.gcn = GCN(128)
-        self.br = BR(64)
+        self.gcn = GCN(32)
+        self.br = BR(32)
 
     def forward(self, g, x):
         g = self.convg(g)
@@ -182,19 +179,19 @@ class Attention_block_v21(nn.Module):
     def __init__(self, in_ch):
         super(Attention_block_v21, self).__init__()
 
-        self.convg = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
-        self.convx = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
+        self.convg = nn.Conv3d(in_ch, 32, kernel_size=1, stride=1, padding=0)
+        self.convx = nn.Conv3d(in_ch, 32, kernel_size=1, stride=1, padding=0)
 
         self.prelux = nn.PReLU()
         self.prelug = nn.PReLU()
 
-        self.dwsc1 = depthwise_separable_conv(128, 128)
+        self.dwsc1 = depthwise_separable_conv(32, 32)
         self.prelu1= nn.PReLU()
 
-        self.dwsc2 = depthwise_separable_conv(128, 128)
+        self.dwsc2 = depthwise_separable_conv(32, 32)
         self.prelu2= nn.PReLU()
 
-        self.conv = nn.Conv3d(128, 128, kernel_size=1,  stride=1, padding=0)
+        self.conv = nn.Conv3d(32, 32, kernel_size=1,  stride=1, padding=0)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, g, x):
