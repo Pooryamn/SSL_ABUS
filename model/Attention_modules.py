@@ -195,7 +195,7 @@ class Attention_block_v21(nn.Module):
         self.prelu2= nn.PReLU()
 
         self.conv = nn.Conv3d(128, 128, kernel_size=1,  stride=1, padding=0)
-        self.sigmoid = nn.sigmoid()
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, g, x):
         
