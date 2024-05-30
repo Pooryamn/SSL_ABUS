@@ -112,12 +112,12 @@ class GCN(nn.Module):
         self.conv21 = nn.Conv3d(in_ch, 64, kernel_size=(1,1,7), padding=(0,0,3))
         self.conv22 = nn.Conv3d(64, 64, kernel_size=(7,7,1), padding=(3,3,0))
 
-    def forward(x):
+    def forward(self,x):
         out1 = self.conv_11(x)
         out1 = self.conv_12(out1)
 
         out2 = self.conv21(x)
-        out2 = self.conv22(x)
+        out2 = self.conv22(out2)
 
         return out1 + out2
 
@@ -131,7 +131,7 @@ class BR(nn.Module):
 
         self.conv2 = nn.Conv3d(in_ch, 64, kernel_size=3, padding=1, stride=1)
     
-    def forward(x):
+    def forward(self,x):
         x1 = self.conv1(x)
         x1 = self.prelu(x1)
         x1 = self.conv2(x1)
