@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from model.Attention_modules import Attention_block
+
 # Double convolutional block
 class DoubleConv(nn.Module):
     """
@@ -40,54 +42,6 @@ class Up(nn.Module):
         x = self.up(x)
 
         return x
-
-class Attention_block(nn.Module):
-    """
-    Attention Module
-    """
-
-    def __init__(self, F_g, F_l, F_int):
-        super(Attention_block, self).__init__()
-
-        self.W_g = nn.Sequential(
-            nn.Conv3d(F_l, F_int, kernel_size=1,stride=1,padding=0,bias=True),
-            nn.BatchNorm3d(F_int)
-        )
-
-        self.W_x = nn.Sequential(
-            nn.Conv3d(F_g, F_int, kernel_size=1,stride=1,padding=0,bias=True),
-            nn.BatchNorm3d(F_int)
-        )
-
-        self.psi = nn.Sequential(
-            nn.Conv3d(F_int, 1, kernel_size=1,stride=1,padding=0,bias=True),
-            nn.BatchNorm3d(1),
-            nn.Sigmoid()
-        )
-
-        self.relu = nn.ReLU(inplace=True)
-
-
-    def forward(self, g, x):
-        
-        # if needed:
-        if (g.shape[2] != x.shape[2]):
-            g_slice = g[:,:,-1,:,:]
-            g = torch.cat((g, g_slice[:,:,None,:,:]), 2)
-        
-        if (g.shape[3] != x.shape[3]):
-            g_slice = g[:,:,:,-1,:]
-            g = torch.cat((g, g_slice[:,:,:,None,:]), 3)
-
-        g1 = self.W_g(g)
-        x1 = self.W_x(x)
-
-        psi = self.relu(g1 + x1)
-        psi = self.psi(psi)
-
-        out = x * psi
-
-        return out
 
 class Attention_Unet(nn.Module):
     """
