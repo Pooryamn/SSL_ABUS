@@ -145,7 +145,6 @@ class Attention_block_v2(nn.Module):
     def __init__(self, in_ch):
         super(Attention_block_v2, self).__init__()
 
-        self.Maxpool1 = nn.MaxPool3d(2, stride=2)
         self.convg = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
         self.convx = nn.Conv3d(in_ch, 128, kernel_size=1, stride=1, padding=0)
         
@@ -153,3 +152,17 @@ class Attention_block_v2(nn.Module):
         self.prelug = nn.PReLU()
         
         self.gcn = GCN(128)
+        self.br = BR(64)
+
+    def forward(g, x):
+        g = self.convg(g)
+        g = self.prelug(g)
+
+        x = self.convx(x)
+        x = self.prelux(x)
+
+        out = self.gcn(g + x)
+
+        out = self.br(out)
+
+        return out
