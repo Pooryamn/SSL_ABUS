@@ -3,7 +3,7 @@ import torch.nn as nn
 from model.Attention_modules import SpatialAttention
 
 class Detection_model(nn.Module):
-    """
+    """ 
     detection model
     """
     def __init__(self, in_ch, out_ch, features = [16, 32, 64], threshold=0.5):
