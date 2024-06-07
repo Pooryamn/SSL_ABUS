@@ -52,6 +52,7 @@ class VolumeMaskDataset(torch.utils.data.Dataset):
         for i in range(number_of_masked_patches):
             x1, x2, y1, y2, z1, z2 = self.masking_coordinate_generator(mask2.shape, self.xy_range, self.z_range)
             volume[x1:x2, y1:y2, z1:z2] = 0
+            mask1[x1:x2, y1:y2, z1:z2] = 0
 
         # Convert to Tensor
         volume = torch.from_numpy(volume).float().unsqueeze(0)
