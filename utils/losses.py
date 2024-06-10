@@ -144,3 +144,23 @@ class TverskyLoss(nn.Module):
         Tversky.requires_grad = True
 
         return 1 - Tversky
+
+class Detection_loss(nn.Module):
+    def __init__(self, ALPHA, BETA):
+        super(Detection_loss, self).__init__()     
+
+        self.alpha = ALPHA
+        self.beta = BETA
+    
+    def forward(self, predictions, targets):
+
+        bce = torch.nn.BCELoss()
+        BCE = bce(predictions[:,:,0].float(), targets[:,:,0].float())
+        BCE = BCE / 100
+
+        mse = nn.MSELoss(size_average=None, reduce=None, reduction='mean')
+        MSE = mse(predictions[:,:,1:], targets[:,:,1:])
+
+        Loss = (self.alpha * BCE) + (self.beta * MSE)
+
+        return Loss
