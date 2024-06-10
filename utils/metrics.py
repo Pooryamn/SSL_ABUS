@@ -63,3 +63,52 @@ def Classification_results(inputs, targets, smooth=0.001):
         F1 = (2 * Precision * Recall) / (Precision + Recall + smooth)
 
         return Precision, Recall, F1, Accuracy, FP / batches
+
+def calculate_iou(box1, box2):
+    x1, y1, w1, h1 = box1
+    x2, y2, w2, h2 = box2
+    
+    xi1 = max(x1, x2)
+    yi1 = max(y1, y2)
+    xi2 = min(x1 + w1, x2 + w2)
+    yi2 = min(y1 + h1, y2 + h2)
+    
+    inter_area = max(((xi2 - xi1) * (yi2 - yi1)), 0)
+    
+    box1_area = w1 * h1
+    box2_area = w2 * h2
+    iou = inter_area / float(box1_area + box2_area - inter_area)
+    return iou
+
+def Detection_results(predictions, targets, iou_threshold, smooth=0.001):
+
+        TP = 0
+        TN = 0
+        FP = 0
+        FN = 0
+
+        for B in range(targets.shape[0]):
+                for i in range(targets.shape[1]):
+                        if(predictions[B,i,0] == 1 and targets[B,i,0] == 1):
+                                # chech IOU
+                                IOU = calculate_iou(predictions[B, i, 1:], targets[B, i, 1:])
+                                if(IOU >= iou_threshold):
+                                        TP += 1
+                        elif(predictions[B,i,0] == 1 and targets[B,i,0] == 0):
+                                FN += 1
+                        elif(predictions[B,i,0] == 0 and targets[B,i,0] == 1):
+                                FP += 1
+                        else:
+                                TN += 1
+
+        TP = TP / (targets.shape[0] * targets.shape[1])
+        TN = TN / (targets.shape[0] * targets.shape[1])
+        FP = FP / (targets.shape[0] * targets.shape[1])
+        FN = FN / (targets.shape[0] * targets.shape[1])
+
+        Precision = TP / (TP + FP + smooth)
+        Recall = TP / (TP + FN + smooth)
+        Accuracy = (TP + TN) / (TP + TN + FP + FN)
+        F1 = (2 * Precision * Recall) / (Precision + Recall + smooth)
+
+        return Precision, Recall, F1, Accuracy, FP
