@@ -131,7 +131,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
         
             # Forward Pass
             outputs = Combined_model(volumes)
-            outputs = post_process(outputs, device)
+            #outputs = post_process(outputs, device)
         
             # Memory related function
             del volumes
