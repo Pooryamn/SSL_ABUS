@@ -83,7 +83,7 @@ class Detection_model(nn.Module):
         x = self.Activation(x)
          
         #x = self.Flatt(x)
-        x = self.Activation(x)
+        #x = self.Activation(x)
 
         #x = (x > self.Threshold) * 1.0
         x = torch.reshape(x, (x.shape[0], 32, 5))
