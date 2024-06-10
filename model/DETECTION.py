@@ -50,8 +50,8 @@ class Detection_model(nn.Module):
         x = self.Maxpool2(x) # (Batch, F1, 60, 60, 32)
         
         # Residual path
-        x_1 = self.Conv_R(x_1) # (Batch, F3, 30, 30, 32)
-        x_1 = self.Maxpool_R(x) # (Batch, F3, 30, 30, 32)
+        x_1 = self.Conv_R(x) # (Batch, F3, 30, 30, 32)
+        x_1 = self.Maxpool_R(x_1) # (Batch, F3, 30, 30, 32)
         x_1 = self.BN_R(x_1)
         x_1 = self.Relu(x_1)
 
