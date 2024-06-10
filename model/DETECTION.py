@@ -88,4 +88,7 @@ class Detection_model(nn.Module):
         #x = (x > self.Threshold) * 1.0
         x = torch.reshape(x, (x.shape[0], 32, 5))
 
+        # p is binary
+        x[:, :, 0] = (x[:, :, 0] > self.Threshold) * 1.0
+
         return x
