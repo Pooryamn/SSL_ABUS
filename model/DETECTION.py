@@ -24,7 +24,7 @@ class Detection_model(nn.Module):
         self.Conv3 = nn.Conv3d(features[1], features[2], kernel_size=(3,3,1), padding=(1,1,0))
         self.Conv4 = nn.Conv3d(features[2], features[1], kernel_size=(3,3,1), dilation=(2,2,1))
         self.Conv5 = nn.Conv3d(features[1], features[0], kernel_size=(3,3,1), dilation=(2,2,1)) 
-        self.Conv6 = nn.Conv3d(features[0], 1, kernel_size=(5,5,1), dilation=(2,2,1), padding=(1,1,0))
+        self.Conv6 = nn.Conv3d(features[0], 5, kernel_size=(5,5,1), dilation=(2,2,1), padding=(1,1,0))
         self.Conv_R = nn.Conv3d(features[0],features[2], kernel_size=(1,1,1))
 
         self.BN1 = nn.BatchNorm3d(features[0])
@@ -82,9 +82,10 @@ class Detection_model(nn.Module):
         
         x = self.Activation(x)
          
-        x = self.Flatt(x)
+        #x = self.Flatt(x)
         x = self.Activation(x)
 
-        x = (x > self.Threshold) * 1.0
+        #x = (x > self.Threshold) * 1.0
+        x = torch.reshape(x, (x.shape[0], 32, 5))
 
         return x
