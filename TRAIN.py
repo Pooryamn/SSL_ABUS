@@ -83,7 +83,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
     optimizer = torch.optim.Adam(Combined_model.parameters(), lr=learning_rate)
 
     # Loss Funcrion
-    criterion = FocalLoss().to(device) # Binary classification
+    criterion = Detection_loss().to(device) # Binary classification
 
     # early stop
     early_stopper = EarlyStopper(patience=4, min_delta=0.3)
