@@ -82,33 +82,33 @@ def calculate_iou(box1, box2):
 
 def Detection_results(predictions, targets, iou_threshold, smooth=0.001):
 
-        TP = 0
-        TN = 0
-        FP = 0
-        FN = 0
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
 
-        for B in range(targets.shape[0]):
-                for i in range(targets.shape[1]):
-                        if(predictions[B,i,0] == 1 and targets[B,i,0] == 1):
-                                # chech IOU
-                                IOU = calculate_iou(predictions[B, i, 1:], targets[B, i, 1:])
-                                if(IOU >= iou_threshold):
-                                        TP += 1
-                        elif(predictions[B,i,0] == 1 and targets[B,i,0] == 0):
-                                FN += 1
-                        elif(predictions[B,i,0] == 0 and targets[B,i,0] == 1):
-                                FP += 1
-                        else:
-                                TN += 1
+    for B in range(targets.shape[0]):
+        for i in range(targets.shape[1]):
+            if(predictions[B,i,0] == 1 and targets[B,i,0] == 1):
+                # chech IOU
+                IOU = calculate_iou(predictions[B, i, 1:], targets[B, i, 1:])
+                if(IOU >= iou_threshold):
+                    TP += 1
+            elif(predictions[B,i,0] == 1 and targets[B,i,0] == 0):
+                FN += 1
+            elif(predictions[B,i,0] == 0 and targets[B,i,0] == 1):
+                FP += 1
+            else:
+                TN += 1
 
-        TP = TP / (targets.shape[0] * targets.shape[1])
-        TN = TN / (targets.shape[0] * targets.shape[1])
-        FP = FP / (targets.shape[0] * targets.shape[1])
-        FN = FN / (targets.shape[0] * targets.shape[1])
+    TP = TP / (targets.shape[0] * targets.shape[1])
+    TN = TN / (targets.shape[0] * targets.shape[1])
+    FP = FP / (targets.shape[0] * targets.shape[1])
+    FN = FN / (targets.shape[0] * targets.shape[1])
 
-        Precision = TP / (TP + FP + smooth)
-        Recall = TP / (TP + FN + smooth)
-        Accuracy = (TP + TN) / (TP + TN + FP + FN)
-        F1 = (2 * Precision * Recall) / (Precision + Recall + smooth)
+    Precision = TP / (TP + FP + smooth)
+    Recall = TP / (TP + FN + smooth)
+    Accuracy = (TP + TN) / (TP + TN + FP + FN)
+    F1 = (2 * Precision * Recall) / (Precision + Recall + smooth)
 
-        return Precision, Recall, F1, Accuracy, FP
+    return Precision, Recall, F1, Accuracy, FP
