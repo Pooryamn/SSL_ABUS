@@ -155,11 +155,11 @@ class Detection_loss(nn.Module):
     def forward(self, predictions, targets):
 
         bce = torch.nn.BCELoss()
-        BCE = bce(predictions[:,:,0].float(), targets[:,:,0].float())
+        BCE = bce(predictions[:,:,0].float(), targets[:,0,:,0].float())
         BCE = BCE / 100
 
         mse = nn.MSELoss(size_average=None, reduce=None, reduction='mean')
-        MSE = mse(predictions[:,:,1:], targets[:,:,1:])
+        MSE = mse(predictions[:,:,1:], targets[:,0,:,1:])
 
         Loss = (self.alpha * BCE) + (self.beta * MSE)
 
