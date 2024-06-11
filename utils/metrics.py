@@ -89,14 +89,14 @@ def Detection_results(predictions, targets, iou_threshold, smooth=0.001):
 
     for B in range(targets.shape[0]):
         for i in range(targets.shape[1]):
-            if(predictions[B,i,0] == 1 and targets[B,i,0] == 1):
+            if(predictions[B,i,0] == 1 and targets[B,0,i,0] == 1):
                 # chech IOU
-                IOU = calculate_iou(predictions[B, i, 1:], targets[B, i, 1:])
+                IOU = calculate_iou(predictions[B, i, 1:], targets[B,0, i, 1:])
                 if(IOU >= iou_threshold):
                     TP += 1
-            elif(predictions[B,i,0] == 1 and targets[B,i,0] == 0):
+            elif(predictions[B,i,0] == 1 and targets[B,0,i,0] == 0):
                 FN += 1
-            elif(predictions[B,i,0] == 0 and targets[B,i,0] == 1):
+            elif(predictions[B,i,0] == 0 and targets[B,0,i,0] == 1):
                 FP += 1
             else:
                 TN += 1
