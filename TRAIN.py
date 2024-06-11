@@ -142,11 +142,11 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
 
             # Metrics
             PRC, REC, F1, ACC, FP = Detection_results(outputs, masks, iou_threshold)
-            Train_PRECISION += PRC.item()
-            Train_RECALL += REC.item()
-            Train_F1 += F1.item()
-            Train_ACCURACY += ACC.item()
-            Train_FP += FP.item()
+            Train_PRECISION += PRC
+            Train_RECALL += REC
+            Train_F1 += F1
+            Train_ACCURACY += ACC
+            Train_FP += FP
 
             # Backward Pass
             optimizer.zero_grad()
@@ -202,11 +202,11 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
             
                 # Metrics
                 PRC, REC, F1, ACC, FP = Detection_results(outputs, masks, iou_threshold)
-                Val_PRECISION += PRC.item()
-                Val_RECALL += REC.item()
-                Val_F1 += F1.item()
-                Val_ACCURACY += ACC.item()
-                Val_FP += FP.item()
+                Val_PRECISION += PRC
+                Val_RECALL += REC
+                Val_F1 += F1
+                Val_ACCURACY += ACC
+                Val_FP += FP
             
                 # Memory related function
                 del masks
