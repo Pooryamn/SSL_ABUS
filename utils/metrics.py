@@ -101,10 +101,10 @@ def Detection_results(predictions, targets, iou_threshold, smooth=0.001):
             else:
                 TN += 1
 
-    TP = TP / (targets.shape[0] * targets.shape[2])
-    TN = TN / (targets.shape[0] * targets.shape[2])
-    FP = FP / (targets.shape[0] * targets.shape[2])
-    FN = FN / (targets.shape[0] * targets.shape[2])
+    TP = TP / (targets.shape[0])
+    TN = TN / (targets.shape[0])
+    FP = FP / (targets.shape[0])
+    FN = FN / (targets.shape[0])
 
     Precision = TP / (TP + FP + smooth)
     Recall = TP / (TP + FN + smooth)
