@@ -96,7 +96,7 @@ def Detection_results(predictions, targets, iou_threshold, smooth=0.001):
                     TP += 1
             elif(predictions[B,i,0] < 0.5 and targets[B,0,i,0] == 1):
                 FN += 1
-            elif(predictions[B,i,0] >=0.5 1 and targets[B,0,i,0] == 0):
+            elif(predictions[B,i,0] >=0.5 and targets[B,0,i,0] == 0):
                 FP += 1
             else:
                 TN += 1
