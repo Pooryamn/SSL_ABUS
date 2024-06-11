@@ -14,15 +14,15 @@ from model.R2UNET import R2U_Net
 from model.ATTR2_UNET import ATTR2U_Net
 from model.DATTR2_UNET import DoubleATTR2U_Net
 from model.DETECTION import Detection_model
-from utils.metrics import Classification_results
+from utils.metrics import Detection_results
 from utils.early_stop import EarlyStopper
 from utils.weight_init import WEIGHT_INITIALIZATION
 from utils.postprocessing import post_process
-from utils.losses import FocalLoss
+from utils.losses import Detection_loss
 
 
 
-def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, Detection_feature_maps=[16,32,64],Train_type='full' , learning_rate=0.001, weight_path = None, log_path = None, weight_init = None):
+def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, Detection_feature_maps=[16,32,64],Train_type='full' , learning_rate=0.001, iou_threshold=0.5, weight_path = None, log_path = None, weight_init = None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -141,7 +141,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
             Train_LOSS += loss.item()
 
             # Metrics
-            PRC, REC, F1, ACC, FP = Classification_results(outputs, masks)
+            PRC, REC, F1, ACC, FP = Detection_results(outputs, masks, iou_threshold)
             Train_PRECISION += PRC.item()
             Train_RECALL += REC.item()
             Train_F1 += F1.item()
@@ -201,7 +201,7 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
                 Val_LOSS += loss.item()
             
                 # Metrics
-                PRC, REC, F1, ACC, FP = Classification_results(outputs, masks)
+                PRC, REC, F1, ACC, FP = Detection_results(outputs, masks, iou_threshold)
                 Val_PRECISION += PRC.item()
                 Val_RECALL += REC.item()
                 Val_F1 += F1.item()
