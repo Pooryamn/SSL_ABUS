@@ -18,4 +18,40 @@ def post_process(x, device):
 
         output[i,:,0] = TMP
         output[i,:,1:] = x[:,i,:,1:]
-    return output
+
+        mass_location = []
+        BBOX_3D = []
+        Flag = False
+
+        for j in range(output.shape[1]):
+            if(output[i,j,0] == 1):
+                if(Flag == False):
+                    # start of new mass
+                    Flag = True
+                    start = j
+                    mass_location.append(output[i,j,1:])
+                else:
+                    # continue of mass
+                    Flag = True
+                    mass_location.append(output[i,j,1:])
+            elif(output[i,j,0] == 0):
+                if(Flag == True):
+                    #end of mass
+                    Flag = False
+                    end = j
+                    mass_location = np.array(mass_location)
+                    X = np.mean(mass_location[:,0])
+                    Y = np.mean(mass_location[:,1])
+                    W = np.mean(mass_location[:,2])
+                    H = np.mean(mass_location[:,3])
+                  
+                    BBOX_3D.append([X, Y, start, W, H, end - start])
+                  
+                    mass_location = list(mass_location)
+                    mass_location = []
+                else:
+                    # simple non mass
+                    Flag = False
+
+
+    return output, BBOX_3D
