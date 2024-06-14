@@ -158,8 +158,12 @@ class Detection_loss(nn.Module):
         
         FOCAL = focal(predictions[:,:,0].float(), targets[:,0,:,0].float())
 
-        mse = nn.MSELoss(size_average=None, reduce=None, reduction='mean')
+        mse = nn.MSELoss(size_average=None, reduction='none')
         MSE = mse(predictions[:,:,1:], targets[:,0,:,1:])
+        MSE = MSE[targets[:,0,:,0] == 1].mean()
+
+        if (torch.isnan(MSE)):
+            MSE = torch.tensor(10e-6)
 
         Loss = (self.alpha * FOCAL) + (self.beta * MSE)
 
