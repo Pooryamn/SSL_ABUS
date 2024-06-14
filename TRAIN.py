@@ -22,7 +22,7 @@ from utils.losses import Detection_loss
 
 
 
-def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, Detection_feature_maps=[16,32,64],Train_type='full' , learning_rate=0.001, iou_threshold=0.5, weight_path = None, log_path = None, weight_init = None):
+def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir, test_volume_dir, test_mask_dir, feature_maps, Detection_feature_maps=[16,32,64],Train_type='full' , learning_rate=0.001, iou_threshold=0.5, weight_path = None, log_path = None, weight_init = None, out_path=None):
     
     # Check GPU
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -110,6 +110,11 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
     else:
         with open(log_path, 'rb') as f:
             plot_data = pickle.load(f)
+
+    if (out_path != None):
+        os.makedirs(out_path, exist_ok=True)
+    else:
+        out_path = './'
 
     # Trainin Loop
     for epoch in range(epochs):
@@ -236,12 +241,12 @@ def TRAIN_Func(epochs, batch_size, model_name, train_volume_dir, train_mask_dir,
         plot_data['valid_accuracy'].append(AVG_valid_accuracy)
         plot_data['valid_fp'].append(AVG_valid_fp)
         
-        with open('Model_history.pkl', 'wb') as f:
+        with open(out_path + 'Model_history.pkl', 'wb') as f:
             pickle.dump(plot_data, f)
 
         # Save Best
         if (AVG_valid_recall > Max_RECALL):
-            torch.save(model.state_dict(), model_name)
+            torch.save(model.state_dict(), out_path + model_name)
             Max_RECALL =  AVG_valid_recall    
 
         # EPOCH LOG
