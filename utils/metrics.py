@@ -94,6 +94,8 @@ def Detection_results(predictions, targets, iou_threshold, smooth=0.001):
                 IOU = calculate_iou(predictions[B, i, 1:], targets[B,0, i, 1:])
                 if(IOU >= iou_threshold):
                     TP += 1
+                else:
+                    FP += 1
             elif(predictions[B,i,0] < 0.5 and targets[B,0,i,0] == 1):
                 FN += 1
             elif(predictions[B,i,0] >=0.5 and targets[B,0,i,0] == 0):
