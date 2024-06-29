@@ -80,7 +80,8 @@ class Detection_model(nn.Module):
         # Fully Convolutionality
         x = self.Conv6(x) # Done
         
-        x = self.Activation(x)
+        x[:,0,:,:,:] = self.Activation(x[:,0,:,:,:])
+        x[:,1:,:,:,:] = self.Relu(x[:,1,:,:,:])
          
         #x = self.Flatt(x)
         #x = self.Activation(x)
