@@ -1,10 +1,10 @@
 # A multi-task self-supervised approach for mass detection in Automated Breast Ultrasound using Double Attention Recurrent Residual U-Net
 
-======
+___
 
 Breast cancer is the most common and lethal cancer among women worldwide. Early detection using medical imaging technologies can significantly improve treatment outcomes. Automated breast ultrasound, known as ABUS, offers more advantages compared to traditional mammography and has recently gained considerable attention. However, reviewing hundreds of ABUS slices imposes a high workload on radiologists, increasing review time and potentially leading to diagnostic errors. Consequently, there is a strong need for efficient computer-aided detection, CADe, systems. In recent years, researchers have proposed deep learning-based CADe systems to enhance mass detection accuracy. However, these methods are highly dependent on the number of training samples and often struggle to balance detection accuracy with the false positive rate. To reduce the workload for radiologists and achieve high detection sensitivities with low false positive rates, this study introduces a novel CADe system based on a self-supervised framework that leverages unannotated ABUS datasets to improve detection results. The proposed framework is integrated into an innovative 3-D convolutional neural network called DATTR2U-Net, which employs a multi-task learning approach to simultaneously train inpainting and denoising pretext tasks. A fully convolutional network is then attached to the DATTR2U-Net for the detection task. The proposed method is validated on the TDSCABUS public dataset, demonstrating promising detection results with a recall of 0.7963 and a false positive rate of 5.67 per volume that signifies its potential to improve detection accuracy while reducing workload for radiologists.
 
-======
+___
 
 # Authors:
 - Poorya MohammadiNasab
@@ -13,13 +13,13 @@ Breast cancer is the most common and lethal cancer among women worldwide. Early 
 - Ehsan Kozegar
 - Mohsen Soryani
   
-====== 
+___
 
 # Supplementary materials:
 ## [Pre-trained Weights](https://drive.google.com/drive/folders/14XkuninPXx0IlDigjaMjILmb-pzdbxnb?usp=sharing)
 ## [Sample Dataset](https://drive.google.com/drive/folders/1M_A50q3utWUuO2PY4ugNSMbaa82JEFvE?usp=sharing)
 
-======
+____
 
 # Repository Under Development 🚧  
 
@@ -36,3 +36,17 @@ Please note that this repository is currently a work in progress. While it alrea
 We appreciate your patience and encourage you to check back soon for updates. If you encounter any issues or have suggestions, feel free to open an issue. 😊  
 
 Stay tuned for a fully-documented and user-friendly release! 🚀
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [A multi-task self-supervised approach for mass detection in Automated Breast Ultrasound using Double Attention Recurrent Residual U-Net](#a-multi-task-self-supervised-approach-for-mass-detection-in-automated-breast-ultrasound-using-double-attention-recurrent-residual-u-net)
+- [Authors:](#authors)
+- [Supplementary materials:](#supplementary-materials)
+  - [Pre-trained Weights](#pre-trained-weightshttpsdrivegooglecomdrivefolders14xkuninpxx0ildigjamjilmb-pzdbxnbuspsharing)
+  - [Sample Dataset](#sample-datasethttpsdrivegooglecomdrivefolders1m_a50q3utwuuo2py4ugnsmbaa82jefveuspsharing)
+- [Repository Under Development 🚧](#repository-under-development-)
+    - [What's Coming Soon:](#whats-coming-soon)
+
+<!-- /code_chunk_output -->
+
