@@ -6,6 +6,17 @@ Breast cancer is the most common and lethal cancer among women worldwide. Early 
 
 ___
 
+<!-- code_chunk_output -->
+
+- [Authors:](#authors)
+- [Supplementary materials:](#supplementary-materials)
+  - [Pre-trained Weights](#pre-trained-weightshttpsdrivegooglecomdrivefolders14xkuninpxx0ildigjamjilmb-pzdbxnbuspsharing)
+  - [Sample Dataset](#sample-datasethttpsdrivegooglecomdrivefolders1m_a50q3utwuuo2py4ugnsmbaa82jefveuspsharing)
+- [Repository Under Development 🚧](#repository-under-development-)
+    - [What's Coming Soon:](#whats-coming-soon)
+
+<!-- /code_chunk_output -->
+
 # Authors:
 - Poorya MohammadiNasab
 - Atousa Khakbaz
@@ -37,16 +48,4 @@ We appreciate your patience and encourage you to check back soon for updates. If
 
 Stay tuned for a fully-documented and user-friendly release! 🚀
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
-
-<!-- code_chunk_output -->
-
-- [A multi-task self-supervised approach for mass detection in Automated Breast Ultrasound using Double Attention Recurrent Residual U-Net](#a-multi-task-self-supervised-approach-for-mass-detection-in-automated-breast-ultrasound-using-double-attention-recurrent-residual-u-net)
-- [Authors:](#authors)
-- [Supplementary materials:](#supplementary-materials)
-  - [Pre-trained Weights](#pre-trained-weightshttpsdrivegooglecomdrivefolders14xkuninpxx0ildigjamjilmb-pzdbxnbuspsharing)
-  - [Sample Dataset](#sample-datasethttpsdrivegooglecomdrivefolders1m_a50q3utwuuo2py4ugnsmbaa82jefveuspsharing)
-- [Repository Under Development 🚧](#repository-under-development-)
-    - [What's Coming Soon:](#whats-coming-soon)
-
-<!-- /code_chunk_output -->
 
